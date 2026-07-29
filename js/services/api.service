@@ -1,1 +1,96 @@
 
+/* =============================================================
+   API SERVICE
+   ---------------------------------------------------------------
+   Camada de domínio: eventos, patrocinadores, squads, inscrições,
+   mensagens, credenciais e configurações. Todo o projeto (admin.html
+   e index.html) fala apenas com `Laads.Api`, nunca com o
+   Laads.Storage ou o localStorage diretamente.
+
+   MIGRAÇÃO FUTURA (Supabase / Firebase / MySQL via API REST):
+   Todas as funções aqui já são `async` e devolvem Promises, mesmo
+   hoje sendo síncronas por baixo dos panos (localStorage). Isso
+   significa que, para migrar, basta reescrever o CORPO de cada
+   função para chamar `fetch(...)`, o client do Supabase, etc. —
+   a assinatura (nome, parâmetros, formato de retorno) permanece a
+   mesma, então nenhum outro arquivo do projeto precisa mudar.
+
+   Exemplo de como ficaria getEvents() com uma API REST:
+     async getEvents() {
+       const res = await fetch('/api/events');
+       return res.ok ? res.json() : [];
+     }
+   ============================================================= */
+(function (global) {
+  'use strict';
+
+  const Storage = global.Laads.Storage;
+
+  const KEYS = {
+    EVENTS: 'laads_events_v1',
+    SPONSORS: 'laads_sponsors_v1',
+    MESSAGES: 'laads_messages_v1',
+    SQUADS: 'laads_squads_v1',
+    SIGNUPS: 'laads_signups_v1',
+    CREDENTIALS: 'laads_admin_credentials_v1',
+    SETTINGS: 'laads_settings_v1',
+  };
+
+  const DEFAULTS = {
+    squads: ['Frontend', 'Backend', 'Mobile', 'Dados & IA', 'DevOps', 'Design/UX'],
+
+    events: [{
+      id: 'evt-ai-driven',
+      tipo: 'Workshop',
+      title: 'AI-Driven Development',
+      subtitle: 'Desenvolvimento baseado em IA e o futuro do dev',
+      date: '18/07',
+      time: '19:30',
+      image: 'assets/evento_ai_driven.jpg',
+      description: 'Palestra com Juliana Conde — mestra em Engenharia, especialista em Inteligência Artificial, GitHub Star e Docker Captain. Um mergulho prático em como a IA está impulsionando o futuro do desenvolvedor: novas ferramentas, produtividade e eficiência, e inovação aplicada ao dia a dia de quem programa.'
+    }],
+
+    sponsors: [{
+      id: 'spo-rocketseat',
+      name: 'Rocketseat',
+      logo: 'assets/rocketseat_logo.jpg',
+      url: 'https://www.rocketseat.com.br'
+    }],
+
+    settings: {},
+  };
+
+  function loadList(key, fallback) {
+    const value = Storage.getItem(key, fallback);
+    return Array.isArray(value) ? value : fallback;
+  }
+
+  const Api = {
+    async getEvents() { return loadList(KEYS.EVENTS, DEFAULTS.events); },
+    async setEvents(list) { return Storage.setItem(KEYS.EVENTS, list); },
+
+    async getSponsors() { return loadList(KEYS.SPONSORS, DEFAULTS.sponsors); },
+    async setSponsors(list) { return Storage.setItem(KEYS.SPONSORS, list); },
+
+    async getSquads() { return loadList(KEYS.SQUADS, DEFAULTS.squads); },
+    async setSquads(list) { return Storage.setItem(KEYS.SQUADS, list); },
+
+    async getSignups() { return loadList(KEYS.SIGNUPS, []); },
+    async setSignups(list) { return Storage.setItem(KEYS.SIGNUPS, list); },
+
+    async getMessages() { return loadList(KEYS.MESSAGES, []); },
+    async setMessages(list) { return Storage.setItem(KEYS.MESSAGES, list); },
+
+    async getCredentials() { return Storage.getItem(KEYS.CREDENTIALS, null); },
+    async setCredentials(creds) { return Storage.setItem(KEYS.CREDENTIALS, creds); },
+
+    async getSettings() { return Storage.getItem(KEYS.SETTINGS, DEFAULTS.settings); },
+    async setSettings(settings) { return Storage.setItem(KEYS.SETTINGS, settings); },
+
+    // Exposto apenas para o backup.service.js montar o pacote de exportação.
+    _keys: KEYS,
+  };
+
+  global.Laads = global.Laads || {};
+  global.Laads.Api = Api;
+})(window);
