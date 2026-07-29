@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de Privacidade — LaADS</title>
+<meta name="description" content="Política de Privacidade da LaADS — Liga Acadêmica de Análise e Desenvolvimento de Sistemas.">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg:  { deep: '#0B132B', panel: '#0F1B3D', raised: '#132449' },
+          gold:{ DEFAULT: '#FFD166', dim: '#F4A261' },
+          ink: { light: '#E8EDF9', muted: '#8A93B2', line: '#1F2B52' }
+        },
+        fontFamily: {
+          mono: ['"Space Mono"', 'monospace'],
+          sans: ['Inter', 'sans-serif'],
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  body{ background:#0B132B; color:#E8EDF9; font-family:'Inter', sans-serif; }
+  ::selection{ background:#FFD166; color:#0B132B; }
+  .eyebrow{ font-family:'Space Mono', monospace; color:#FFD166; letter-spacing:.02em; }
+  .eyebrow::before{ content:"// "; color:#F4A261; opacity:.8; }
+  h2{ font-family:'Space Mono', monospace; }
+</style>
+</head>
+
+<body class="antialiased">
+
+<header class="border-b border-ink-line/70 bg-bg-panel/60">
+  <div class="max-w-3xl mx-auto px-5 md:px-8 h-16 flex items-center justify-between">
+    <span class="font-mono font-bold text-sm text-ink-light">LaADS</span>
+    <a href="index.html" class="font-mono text-xs text-ink-muted hover:text-gold transition-colors">← voltar ao site</a>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-5 md:px-8 py-16 space-y-10">
+
+  <div>
+    <p class="eyebrow text-sm mb-3">liga.privacidade()</p>
+    <h1 class="font-mono font-bold text-3xl md:text-4xl text-ink-light mb-4">Política de Privacidade</h1>
+    <p class="text-ink-muted text-sm">Última atualização: julho de 2026.</p>
+  </div>
+
+  <p class="text-ink-light/90 text-sm leading-relaxed">
+    Esta política explica, de forma simples, quais dados a LaADS — Liga Acadêmica de Análise e Desenvolvimento
+    de Sistemas — coleta pelo site, para que servem e quais são os seus direitos, em conformidade com a Lei
+    Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018).
+  </p>
+
+  <section class="space-y-3">
+    <h2 class="text-xl font-bold text-ink-light">1. Quem é o controlador dos dados</h2>
+    <p class="text-sm text-ink-light/90 leading-relaxed">
+      A coordenação da LaADS é responsável pelo tratamento dos dados coletados por este site. Dúvidas ou
+      solicitações podem ser enviadas para <span class="text-gold">contato@laads.edu.br</span>.
+    </p>
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="text-xl font-bold text-ink-light">2. Quais dados coletamos</h2>
+    <p class="text-sm text-ink-light/90 leading-relaxed">
+      Coletamos apenas os dados que você envia voluntariamente pelos formulários do site:
+    </p>
+    <ul class="list-disc list-inside text-sm text-ink-light/90 space-y-1 pl-2">
+      <li>Formulário de inscrição ("Faça parte"): nome, período, telefone, e-mail, squad de interesse e mensagem opcional.</li>
+      <li>Formulário de contato: nome, e-mail e mensagem.</li>
+    </ul>
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="text-xl font-bold text-ink-light">3. Para que usamos esses dados</h2>
+    <p class="text-sm text-ink-light/90 leading-relaxed">
+      Usamos os dados exclusivamente para responder à sua inscrição ou mensagem, organizar as atividades da
+      liga e entrar em contato sobre os próximos passos. Não vendemos, alugamos ou compartilhamos seus dados
+      com terceiros para fins de marketing.
+    </p>
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="text-xl font-bold text-ink-light">4. Onde os dados ficam armazenados</h2>
+    <p class="text-sm text-ink-light/90 leading-relaxed">
+      Este é um site estático, sem servidor próprio: os dados enviados pelos formulários ficam salvos no
+      armazenamento local do navegador de quem preenche o formulário, e são lidos pela coordenação através do
+      painel administrativo no mesmo navegador/computador. Recomendamos não preencher os formulários em
+      computadores públicos ou compartilhados sem necessidade.
+    </p>
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="text-xl font-bold text-ink-light">5. Seus direitos</h2>
+    <p class="text-sm text-ink-light/90 leading-relaxed">
+      Conforme a LGPD, você pode solicitar a qualquer momento a confirmação, correção ou exclusão dos seus
+      dados, além de retirar o consentimento dado. Basta entrar em contato pelo e-mail acima.
+    </p>
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="text-xl font-bold text-ink-light">6. Alterações desta política</h2>
+    <p class="text-sm text-ink-light/90 leading-relaxed">
+      Esta política pode ser atualizada periodicamente. A data da última atualização é sempre indicada no
+      topo desta página.
+    </p>
+  </section>
+
+</main>
+
+<footer class="border-t border-ink-line">
+  <div class="max-w-3xl mx-auto px-5 md:px-8 py-8 text-center">
+    <p class="font-mono text-[11px] text-ink-muted">LaADS © 2026 · Liga Acadêmica de Análise e Desenvolvimento de Sistemas</p>
+  </div>
+</footer>
+
+</body>
+</html>

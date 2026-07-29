@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaADS — Liga Acadêmica de Análise e Desenvolvimento de Sistemas</title>
+<meta name="description" content="LaADS — Liga Acadêmica de Análise e Desenvolvimento de Sistemas. Eventos, mentoria, projetos e parcerias para quem constrói o futuro em código.">
+
+<!-- Tailwind (utility classes for layout/spacing/responsive grid) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Google Fonts: Space Mono (display/eyebrow, echoes a terminal/monospace world fitting for ADS)
+     + Inter (body, high legibility) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Font Awesome (brand icon used for the Instagram reveal effect) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+  // Tailwind config: map our token system into Tailwind's theme
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg: {
+            deep: '#0B132B',
+            panel: '#0F1B3D',
+            raised: '#132449',
+          },
+          gold: {
+            DEFAULT: '#FFD166',
+            dim: '#F4A261',
+          },
+          ink: {
+            light: '#E8EDF9',
+            muted: '#8A93B2',
+            line: '#1F2B52',
+          }
+        },
+        fontFamily: {
+          mono: ['"Space Mono"', 'monospace'],
+          sans: ['Inter', 'sans-serif'],
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  /* ============================================================
+     DESIGN TOKENS (also mirrored into tailwind.config above)
+     bg-deep    #0B132B  primary background
+     bg-panel   #0F1B3D  section/card background
+     gold       #FFD166  primary accent
+     gold-dim   #F4A261  secondary accent / hover
+     ink-light  #E8EDF9  primary text
+     ink-muted  #8A93B2  secondary text
+     ink-line   #1F2B52  borders / dividers
+     ============================================================ */
+
+  :root{
+    --scroll-progress: 0;      /* 0 -> 1, drives the hero zoom/blur */
+    --hero-zoom: 1.18;         /* starts slightly zoomed in, matches the video hero */
+    --hero-blur: 0px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body{
+    background: #0B132B;
+    color: #E8EDF9;
+    font-family: 'Inter', sans-serif;
+  }
+
+  ::selection{ background:#FFD166; color:#0B132B; }
+
+  /* Subtle scrollbar to match the palette */
+  ::-webkit-scrollbar{ width:10px; }
+  ::-webkit-scrollbar-track{ background:#0B132B; }
+  ::-webkit-scrollbar-thumb{ background:#1F2B52; border-radius:99px; }
+  ::-webkit-scrollbar-thumb:hover{ background:#F4A261; }
+
+  /* -------------------------------------------------------
+     Signature motif: a faint circuit / ERD grid.
+     Evokes system diagrams — the language of ADS students —
+     used as ambient texture rather than decoration.
+  ------------------------------------------------------- */
+  .circuit-grid{
+    background-image:
+      linear-gradient(rgba(255,209,102,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,209,102,0.05) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+
+  /* Eyebrow labels styled like code comments: "// eventos" */
+  .eyebrow{
+    font-family: 'Space Mono', monospace;
+    color: #FFD166;
+    letter-spacing: 0.02em;
+  }
+  .eyebrow::before{ content: "// "; color:#F4A261; opacity:0.8; }
+
+  /* -------------------------------------------------------
+     HERO — scroll-linked zoom & blur
+     --scroll-progress is updated in JS via rAF-throttled
+     scroll listener, then translated into two custom
+     properties consumed here.
+  ------------------------------------------------------- */
+  /* -------------------------------------------------------
+     HERO TEXT — outline + shadow so the copy stays legible
+     over the moving video background, regardless of frame.
+  ------------------------------------------------------- */
+  .hero-heading{
+    -webkit-text-stroke: 1.5px rgba(11,19,43,0.75);
+    text-shadow:
+      -1px -1px 0 rgba(11,19,43,0.9),
+       1px -1px 0 rgba(11,19,43,0.9),
+      -1px  1px 0 rgba(11,19,43,0.9),
+       1px  1px 0 rgba(11,19,43,0.9),
+       0 10px 30px rgba(0,0,0,0.55);
+  }
+  .hero-subtext{
+    text-shadow:
+      0 1px 3px rgba(0,0,0,0.9),
+      0 4px 16px rgba(0,0,0,0.6);
+  }
+
+  .hero-media{
+    transform: scale(var(--hero-zoom));
+    filter: blur(var(--hero-blur));
+    transition: transform 0.05s linear, filter 0.05s linear;
+    will-change: transform, filter;
+  }
+
+  .hero-scanlines{
+    background-image: repeating-linear-gradient(
+      0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px,
+      transparent 1px, transparent 3px
+    );
+  }
+
+  /* Terminal-tab quick nav (the page's signature interactive element) */
+  .tab-strip{
+    font-family: 'Space Mono', monospace;
+  }
+  .tab-strip a{
+    position: relative;
+    transition: color .25s ease, background-color .25s ease;
+  }
+  .tab-strip a.active{
+    color: #0B132B;
+    background: #FFD166;
+  }
+  .tab-strip a.active::before{
+    content: "●";
+    color: #0B132B;
+    margin-right: 6px;
+    font-size: 8px;
+    vertical-align: middle;
+  }
+  .tab-strip a:not(.active)::before{
+    content: "○";
+    color: #F4A261;
+    margin-right: 6px;
+    font-size: 8px;
+    vertical-align: middle;
+  }
+
+  /* Nav link underline sweep */
+  .nav-link{ position:relative; }
+  .nav-link::after{
+    content:"";
+    position:absolute; left:0; bottom:-4px;
+    width:0; height:2px;
+    background:#FFD166;
+    transition: width .25s ease;
+  }
+  .nav-link:hover::after{ width:100%; }
+
+  /* Card lift micro-interaction */
+  .lift{ transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease; }
+  .lift:hover{
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px -20px rgba(255,209,102,0.25);
+    border-color: rgba(255,209,102,0.4);
+  }
+
+  /* CTA button glow */
+  /* -------------------------------------------------------
+     BUTTONS — animated neon-border effect (themed to the
+     site's navy/gold palette instead of the original cyan).
+     Each .btn-neon needs 4 child <span> elements in the HTML;
+     each span animates a light trail along one edge.
+  ------------------------------------------------------- */
+  .btn-neon{
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    padding: 1rem 2rem;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-align: center;
+    color: #FFD166;
+    background: transparent;
+    border: 1px solid rgba(255,209,102,0.35);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: color .4s ease, background-color .4s ease, box-shadow .4s ease, border-color .4s ease, transform .2s ease;
+  }
+  .btn-neon:hover{
+    color: #0B132B;
+    background: #FFD166;
+    border-color: #FFD166;
+    transform: translateY(-2px);
+    box-shadow: 0 0 5px #FFD166, 0 0 25px rgba(255,209,102,0.55), 0 0 60px rgba(255,209,102,0.3);
+  }
+  /* Secondary variant: same motion, dimmer gold-orange tone for visual hierarchy */
+  .btn-neon--alt{ color:#F4A261; border-color: rgba(244,162,97,0.35); }
+  .btn-neon--alt:hover{
+    color:#0B132B;
+    background:#F4A261;
+    border-color:#F4A261;
+    box-shadow: 0 0 5px #F4A261, 0 0 25px rgba(244,162,97,0.55), 0 0 60px rgba(244,162,97,0.3);
+  }
+
+  .btn-neon span{ position:absolute; display:block; pointer-events:none; }
+
+  .btn-neon span:nth-child(1){
+    top:0; left:0; width:100%; height:2px;
+    background: linear-gradient(90deg, transparent, #FFD166);
+    animation: btnAnimate1 1.8s linear infinite;
+  }
+  @keyframes btnAnimate1{ 0%{ left:-100%; } 50%,100%{ left:100%; } }
+
+  .btn-neon span:nth-child(2){
+    top:-100%; right:0; width:2px; height:100%;
+    background: linear-gradient(180deg, transparent, #FFD166);
+    animation: btnAnimate2 1.8s linear infinite;
+    animation-delay: .45s;
+  }
+  @keyframes btnAnimate2{ 0%{ top:-100%; } 50%,100%{ top:100%; } }
+
+  .btn-neon span:nth-child(3){
+    bottom:0; right:0; width:100%; height:2px;
+    background: linear-gradient(270deg, transparent, #FFD166);
+    animation: btnAnimate3 1.8s linear infinite;
+    animation-delay: .9s;
+  }
+  @keyframes btnAnimate3{ 0%{ right:-100%; } 50%,100%{ right:100%; } }
+
+  .btn-neon span:nth-child(4){
+    bottom:-100%; left:0; width:2px; height:100%;
+    background: linear-gradient(360deg, transparent, #FFD166);
+    animation: btnAnimate4 1.8s linear infinite;
+    animation-delay: 1.35s;
+  }
+  @keyframes btnAnimate4{ 0%{ bottom:-100%; } 50%,100%{ bottom:100%; } }
+
+  .btn-neon--alt span:nth-child(1){ background: linear-gradient(90deg, transparent, #F4A261); }
+  .btn-neon--alt span:nth-child(2){ background: linear-gradient(180deg, transparent, #F4A261); }
+  .btn-neon--alt span:nth-child(3){ background: linear-gradient(270deg, transparent, #F4A261); }
+  .btn-neon--alt span:nth-child(4){ background: linear-gradient(360deg, transparent, #F4A261); }
+
+  /* -------------------------------------------------------
+     SOCIAL — Instagram icon-reveal effect (league's real
+     social channel). Base icon sits muted; on hover the
+     Instagram gradient glyph wipes in from the top.
+  ------------------------------------------------------- */
+  .social-ig{
+    position: relative;
+    display: inline-flex;
+    width: 46px; height: 46px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #1F2B52;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color .3s ease;
+  }
+  .social-ig:hover{ border-color: rgba(220,39,67,0.5); }
+  .social-ig i.fa-brands{
+    font-size: 1.4rem;
+    color: #8A93B2;
+    transition: opacity .3s ease;
+  }
+  .social-ig::before{
+    content: "\f16d"; /* Instagram glyph */
+    font-family: "Font Awesome 6 Brands";
+    font-weight: 400;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    height: 0;
+    overflow: hidden;
+    transition: height .5s ease-in-out;
+    background-image: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    border-bottom: 3px solid #dc2743;
+  }
+  .social-ig:hover::before{ height: 100%; }
+  .social-ig:hover i.fa-brands{ opacity: 0; }
+
+  /* -------------------------------------------------------
+     EVENTOS — image-first reveal card. The poster image is
+     always visible; only on hover does a dark panel with the
+     full description fade/slide in over it.
+  ------------------------------------------------------- */
+  .ev-card{
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    height: 440px;
+    border: 3px solid;
+    border-image: linear-gradient(135deg, #FFD166, #8a6d1a, #F4A261, #8a6d1a, #FFD166) 1;
+  }
+
+  .ev-image{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform .5s ease;
+  }
+  .ev-card:hover .ev-image{ transform: scale(1.06); }
+
+  /* Always-visible caption strip (tipo + título + data) over a bottom scrim */
+  .ev-caption{
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1.5rem 1.5rem;
+    background: linear-gradient(to top, rgba(11,19,43,0.92) 0%, rgba(11,19,43,0.35) 55%, transparent 100%);
+    transition: opacity .3s ease;
+  }
+  .ev-card:hover .ev-caption{ opacity: 0; }
+
+  /* Full description panel — hidden until hover */
+  .ev-desc{
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1.75rem;
+    background: rgba(11,19,43,0.94);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .35s ease, transform .35s ease;
+    overflow-y: auto;
+  }
+  .ev-card:hover .ev-desc{ opacity: 1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce){
+    .ev-image, .ev-caption, .ev-desc{ transition: none !important; }
+  }
+
+  /* Sponsor logo tile — logo + name, both clickable */
+  .sponsor-tile{
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: .6rem;
+    height: 8.5rem;
+    background: #0B132B;
+    border: 1px solid #1F2B52;
+    border-radius: 12px;
+    padding: 1.1rem 1.5rem;
+    transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .sponsor-tile:hover{
+    transform: translateY(-4px);
+    border-color: rgba(255,209,102,0.4);
+    box-shadow: 0 16px 30px -18px rgba(255,209,102,0.35);
+  }
+  .sponsor-tile img{ max-height: 3.25rem; max-width: 100%; object-fit: contain; border-radius: 6px; }
+  .sponsor-tile .sponsor-name{
+    font-family: 'Space Mono', monospace;
+    font-size: .75rem;
+    letter-spacing: .04em;
+    color: #8A93B2;
+    transition: color .3s ease;
+  }
+  .sponsor-tile:hover .sponsor-name{ color: #FFD166; }
+
+  /* Fade-in-on-scroll (activated via IntersectionObserver, see JS) */
+  .reveal{
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .reveal.is-visible{
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Mobile menu panel */
+  #mobileMenu{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .4s ease;
+  }
+  #mobileMenu.open{ max-height: 480px; }
+
+  /* Burger icon transform */
+  .burger-line{ transition: transform .3s ease, opacity .3s ease; }
+  #burgerBtn.open .burger-line:nth-child(1){ transform: translateY(7px) rotate(45deg); }
+  #burgerBtn.open .burger-line:nth-child(2){ opacity: 0; }
+  #burgerBtn.open .burger-line:nth-child(3){ transform: translateY(-7px) rotate(-45deg); }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    .reveal, .hero-media, .lift, .btn-neon, .btn-neon span, .nav-link::after{ transition: none !important; animation: none !important; }
+  }
+
+  /* Logo monogram ring */
+  .logo-ring{
+    background: conic-gradient(from 180deg, #FFD166, #F4A261, #FFD166);
+  }
+</style>
+</head>
+
+<body class="antialiased">
+
+<!-- =========================================================
+     NAVIGATION — sticky header
+     Left: LaADS mark · Center: nav links · Right: college mark
+     ========================================================= -->
+<header id="siteHeader" class="fixed top-0 inset-x-0 z-50 border-b border-ink-line/70 bg-bg-deep/85 backdrop-blur-md transition-shadow">
+  <nav class="max-w-7xl mx-auto px-5 md:px-8">
+    <div class="h-16 md:h-20 flex items-center justify-between gap-4">
+
+      <!-- LaADS logo (asset real) -->
+      <a href="#top" class="flex items-center gap-3 shrink-0 group">
+        <span class="w-10 h-10 rounded-full logo-ring p-[2px] grid place-items-center overflow-hidden">
+          <img src="assets/logo_laads.jpeg" alt="Logo LaADS" class="w-full h-full rounded-full object-cover">
+        </span>
+        <span class="hidden sm:flex flex-col leading-tight">
+          <span class="font-mono font-bold text-ink-light text-sm tracking-wide">LaADS</span>
+          <span class="text-[10px] text-ink-muted">Liga Acadêmica&nbsp;ADS</span>
+        </span>
+      </a>
+
+      <!-- Center nav (desktop) -->
+      <ul class="hidden lg:flex items-center gap-8 font-medium text-sm text-ink-light/90 mx-auto">
+        <li><a href="#eventos" class="nav-link hover:text-gold transition-colors">Eventos</a></li>
+        <li><a href="#faca-parte" class="nav-link hover:text-gold transition-colors">Faça parte</a></li>
+        <li><a href="#quem-somos" class="nav-link hover:text-gold transition-colors">Quem Somos</a></li>
+        <li><a href="#parcerias" class="nav-link hover:text-gold transition-colors">Parcerias</a></li>
+        <li><a href="#contato" class="nav-link hover:text-gold transition-colors">Contato</a></li>
+      </ul>
+
+      <!-- College logo (placeholder mark) + burger -->
+      <div class="flex items-center gap-4 shrink-0">
+        <div class="hidden md:flex items-center gap-2 pl-4 border-l border-ink-line">
+          <span class="w-9 h-9 rounded-md border border-ink-line bg-white grid place-items-center overflow-hidden p-1">
+            <img src="assets/serra_dourada_logo.svg" alt="Logo Faculdade Serra Dourada" class="w-full h-full object-contain">
+          </span>
+          <span class="text-[11px] text-ink-muted leading-tight max-w-[7rem]">Faculdade<br>Serra&nbsp;Dourada</span>
+        </div>
+
+        <!-- Burger (mobile) -->
+        <button id="burgerBtn" aria-label="Abrir menu" aria-expanded="false" class="lg:hidden w-9 h-7 relative flex flex-col justify-between">
+          <span class="burger-line block h-[2px] w-full bg-gold rounded"></span>
+          <span class="burger-line block h-[2px] w-full bg-gold rounded"></span>
+          <span class="burger-line block h-[2px] w-full bg-gold rounded"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="lg:hidden">
+      <ul class="flex flex-col gap-1 pb-5 font-mono text-sm">
+        <li><a href="#eventos" class="mobile-link block px-3 py-2.5 rounded-md hover:bg-bg-panel hover:text-gold transition-colors">01 · Eventos</a></li>
+        <li><a href="#faca-parte" class="mobile-link block px-3 py-2.5 rounded-md hover:bg-bg-panel hover:text-gold transition-colors">02 · Faça parte</a></li>
+        <li><a href="#quem-somos" class="mobile-link block px-3 py-2.5 rounded-md hover:bg-bg-panel hover:text-gold transition-colors">03 · Quem Somos</a></li>
+        <li><a href="#parcerias" class="mobile-link block px-3 py-2.5 rounded-md hover:bg-bg-panel hover:text-gold transition-colors">04 · Parcerias</a></li>
+        <li><a href="#contato" class="mobile-link block px-3 py-2.5 rounded-md hover:bg-bg-panel hover:text-gold transition-colors">05 · Contato</a></li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<!-- =========================================================
+     HERO — full-width, scroll-driven zoom & blur
+     ========================================================= -->
+<section id="top" class="relative h-[100svh] min-h-[560px] w-full overflow-hidden">
+
+  <!-- Background video (scaled/blurred by JS via CSS vars as the user scrolls) -->
+  <video id="heroMedia" class="hero-media absolute inset-0 -z-10 w-full h-full object-cover" autoplay muted loop playsinline>
+    <source src="assets/matrix_bg.mp4" type="video/mp4">
+    Seu navegador não suporta a tag de vídeo.
+  </video>
+
+  <!-- Dark gradient overlay so the hero copy stays readable over the footage -->
+  <div class="absolute inset-0 -z-[5] bg-gradient-to-b from-bg-deep/40 via-bg-deep/55 to-bg-deep pointer-events-none"></div>
+  <div class="absolute inset-0 -z-[5] hero-scanlines pointer-events-none"></div>
+
+  <!-- Foreground content -->
+  <div class="relative z-10 h-full max-w-6xl mx-auto px-5 md:px-8 flex flex-col justify-center">
+    <p class="eyebrow text-xs md:text-sm mb-4">sistema.iniciar( turma )</p>
+    <h1 class="hero-heading font-mono font-bold text-4xl sm:text-5xl md:text-7xl leading-[1.05] text-ink-light max-w-3xl">
+      Liga Acadêmica de Análise e Desenvolvimento de Sistemas
+    </h1>
+    <p class="hero-subtext mt-6 max-w-xl text-ink-muted text-base md:text-lg">
+      Projetos reais, mentoria, colaboração e uma comunidade de estudantes construindo software e carreiras  juntos.
+    </p>
+    <div class="mt-9 flex flex-wrap gap-4">
+      <a href="#faca-parte" class="btn-neon">Quero fazer parte<span></span><span></span><span></span><span></span></a>
+      <a href="#eventos" class="btn-neon btn-neon--alt">Ver próximos eventos<span></span><span></span><span></span><span></span></a>
+    </div>
+  </div>
+
+  <!-- Scroll cue -->
+  <div class="absolute bottom-7 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-ink-muted">
+    <span class="w-[1px] h-8 bg-gradient-to-b from-gold to-transparent"></span>
+  </div>
+</section>
+
+<!-- Terminal-tab quick nav — signature element, doubles as a section index -->
+<nav class="tab-strip sticky top-16 md:top-20 z-40 bg-bg-deep/95 border-y border-ink-line/70 overflow-x-auto">
+  <div class="max-w-7xl mx-auto px-5 md:px-8 flex gap-2 py-2.5 text-xs">
+    <a data-tab href="#eventos" class="whitespace-nowrap px-3 py-1.5 rounded-full border border-ink-line text-ink-muted">~/eventos</a>
+    <a data-tab href="#faca-parte" class="whitespace-nowrap px-3 py-1.5 rounded-full border border-ink-line text-ink-muted">~/faca-parte</a>
+    <a data-tab href="#quem-somos" class="whitespace-nowrap px-3 py-1.5 rounded-full border border-ink-line text-ink-muted">~/quem-somos</a>
+    <a data-tab href="#parcerias" class="whitespace-nowrap px-3 py-1.5 rounded-full border border-ink-line text-ink-muted">~/parcerias</a>
+    <a data-tab href="#contato" class="whitespace-nowrap px-3 py-1.5 rounded-full border border-ink-line text-ink-muted">~/contato</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- =====================================================
+       EVENTOS
+       ===================================================== -->
+  <section id="eventos" class="max-w-7xl mx-auto px-5 md:px-8 py-24 md:py-32">
+    <div class="reveal mb-14">
+      <p class="eyebrow text-sm mb-3">eventos.listar()</p>
+      <h2 class="font-mono font-bold text-3xl md:text-5xl text-ink-light">Próximos eventos</h2>
+      <p class="mt-4 text-ink-muted max-w-xl">Encontros, workshops, palestras e maratonas de código criados por estudantes e para estudantes. Um espaço para compartilhar conhecimento, colocar ideias em prática, desenvolver novas habilidades e crescer junto com a comunidade LaADS.</p>
+    </div>
+
+    <!-- Populated by renderEvents() from the shared data layer (see closing script) -->
+    <div id="eventosGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </section>
+
+  <!-- =====================================================
+       FAÇA PARTE
+       ===================================================== -->
+ <section id="faca-parte" class="bg-bg-panel border-y border-ink-line">
+    <div class="max-w-7xl mx-auto px-5 md:px-8 py-24 md:py-32">
+ 
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-10 items-start">
+ 
+        <div class="reveal">
+          <p class="eyebrow text-sm mb-3">liga.inscrever( voce )</p>
+          <h2 class="font-mono font-bold text-3xl md:text-5xl text-ink-light mb-6">Faça parte da LaADS</h2>
+          <p class="text-ink-muted mb-8 max-w-lg">Aqui, todo mundo tem espaço para aprender.<br>
+
+Não importa se você já programa ou está dando os primeiros passos no curso: na LaADS, você encontra um ambiente para testar ideias, colocar o conhecimento em prática, aprender com os erros e evoluir junto com outras pessoas.<br> Porque, quando aprendemos em comunidade, crescemos muito mais rápido do que sozinhos.</p>
+ 
+          <ul class="space-y-4 mb-9">
+            <li class="flex gap-3 items-start">
+              <span class="font-mono text-gold mt-0.5">01</span>
+              <span class="text-ink-light text-sm">Projetos reais em squads, com mentoria de veteranos.</span>
+            </li>
+            <li class="flex gap-3 items-start">
+              <span class="font-mono text-gold mt-0.5">02</span>
+              <span class="text-ink-light text-sm">Certificados de participação para currículo e horas complementares.</span>
+            </li>
+            <li class="flex gap-3 items-start">
+              <span class="font-mono text-gold mt-0.5">03</span>
+              <span class="text-ink-light text-sm">Acesso direto a vagas de estágio das empresas parceiras.</span>
+            </li>
+          </ul>
+ 
+          <a href="#inscricaoForm" class="btn-neon">Enviar inscrição<span></span><span></span><span></span><span></span></a>
+        </div>
+ 
+        <!-- =====================================================
+             FORMULÁRIO DE INSCRIÇÃO
+             Envia para o mesmo armazenamento local lido pelo
+             painel administrativo (seção "Inscrições").
+             ===================================================== -->
+        <div id="inscricaoForm" class="reveal lift bg-bg-deep border border-ink-line rounded-2xl p-8 scroll-mt-24">
+          <p class="eyebrow text-sm mb-3">liga.formulario_de_inscricao()</p>
+          <h3 class="font-mono font-bold text-2xl text-ink-light mb-2">Inscreva-se agora</h3>
+          <p class="text-ink-muted text-sm mb-8">Preencha seus dados abaixo. A coordenação entra em contato para os próximos passos.</p>
+ 
+          <form class="space-y-5" onsubmit="return handleSignupSubmit(event)" novalidate>
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-xs font-mono text-ink-muted mb-2" for="suName">nome</label>
+                <input id="suName" required type="text" maxlength="120" autocomplete="name" placeholder="Seu nome completo"
+                  class="w-full bg-bg-panel border border-ink-line rounded-md px-4 py-3 text-sm text-ink-light placeholder:text-ink-muted/60 focus:outline-none focus:border-gold transition-colors">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-ink-muted mb-2" for="suPeriodo">período</label>
+                <input id="suPeriodo" required type="text" inputmode="numeric" maxlength="2" placeholder="Ex: 3"
+                  class="w-full bg-bg-panel border border-ink-line rounded-md px-4 py-3 text-sm text-ink-light placeholder:text-ink-muted/60 focus:outline-none focus:border-gold transition-colors">
+              </div>
+            </div>
+ 
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-xs font-mono text-ink-muted mb-2" for="suPhone">telefone</label>
+                <input id="suPhone" required type="tel" inputmode="numeric" maxlength="17" autocomplete="tel" placeholder="(00) 0 0000-0000"
+                  oninput="maskPhone(this)"
+                  class="w-full bg-bg-panel border border-ink-line rounded-md px-4 py-3 text-sm text-ink-light placeholder:text-ink-muted/60 focus:outline-none focus:border-gold transition-colors">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-ink-muted mb-2" for="suEmail">email</label>
+                <input id="suEmail" required type="email" maxlength="180" autocomplete="email" placeholder="voce@exemplo.com"
+                  class="w-full bg-bg-panel border border-ink-line rounded-md px-4 py-3 text-sm text-ink-light placeholder:text-ink-muted/60 focus:outline-none focus:border-gold transition-colors">
+              </div>
+            </div>
+ 
+            <div>
+              <label class="block text-xs font-mono text-ink-muted mb-2" for="suSquad">squad</label>
+              <select id="suSquad" required
+                class="w-full bg-bg-panel border border-ink-line rounded-md px-4 py-3 text-sm text-ink-light focus:outline-none focus:border-gold transition-colors">
+                <!-- Populado por renderSquadOptions() a partir dos squads cadastrados no painel -->
+              </select>
+            </div>
+ 
+            <div>
+              <label class="block text-xs font-mono text-ink-muted mb-2" for="suMsg">mensagem (opcional)</label>
+              <textarea id="suMsg" rows="4" maxlength="1000" placeholder="Conte um pouco sobre você: experiência, motivação, disponibilidade..."
+                class="w-full bg-bg-panel border border-ink-line rounded-md px-4 py-3 text-sm text-ink-light placeholder:text-ink-muted/60 focus:outline-none focus:border-gold transition-colors resize-none"></textarea>
+            </div>
+ 
+            <div class="flex items-start gap-3">
+              <input id="suConsent" type="checkbox" required
+                class="mt-1 w-4 h-4 rounded border-ink-line bg-bg-panel accent-[#FFD166] shrink-0">
+              <label for="suConsent" class="text-xs text-ink-muted leading-relaxed">
+                Concordo com o uso do meu nome, e-mail e telefone para fins de inscrição na liga, conforme a
+                <a href="privacidade.html" target="_blank" rel="noopener noreferrer" class="text-gold hover:underline">Política de Privacidade</a>.
+              </label>
+            </div>
+ 
+            <button type="submit" class="btn-neon w-full">Enviar inscrição<span></span><span></span><span></span><span></span></button>
+            <p id="signupStatus" class="text-xs text-ink-muted font-mono min-h-[1rem]"></p>
+          </form>
+        </div>
+ 
+
+    </div>
+  </section>
+
+  <!-- =====================================================
+       QUEM SOMOS
+       ===================================================== -->
+  <section id="quem-somos" class="max-w-7xl mx-auto px-5 md:px-8 py-24 md:py-32">
+    <div class="reveal mb-14 max-w-2xl">
+      <p class="eyebrow text-sm mb-3">liga.sobre()</p>
+      <h2 class="font-mono font-bold text-3xl md:text-5xl text-ink-light mb-6">Quem somos</h2>
+      <p class="text-ink-muted">De estudantes para estudantes.<br>
+
+A LaADS nasceu da vontade de transformar o aprendizado em algo que vai além da sala de aula. Um grupo de estudantes decidiu que queria aprender fazendo, construindo projetos e enfrentando desafios reais e não apenas decorando slides.<br>
+
+Hoje, somos uma comunidade que conecta academia, mercado e prática, criando oportunidades para desenvolver habilidades, compartilhar conhecimento e transformar ideias em projetos que geram impacto dentro e fora da faculdade.</p>
+    </div>
+
+   <!--  <div class="grid sm:grid-cols-3 gap-6 mb-16">
+      <div class="reveal lift bg-bg-panel border border-ink-line rounded-2xl p-8 text-center">
+        <p class="font-mono text-4xl font-bold text-gold mb-1">2026</p>
+        <p class="text-xs text-ink-muted uppercase tracking-wide">Ano de fundação</p>
+      </div>
+      <div class="reveal lift bg-bg-panel border border-ink-line rounded-2xl p-8 text-center">
+        <p class="font-mono text-4xl font-bold text-gold mb-1">180+</p>
+        <p class="text-xs text-ink-muted uppercase tracking-wide">Membros ativos</p>
+      </div>
+      <div class="reveal lift bg-bg-panel border border-ink-line rounded-2xl p-8 text-center">
+        <p class="font-mono text-4xl font-bold text-gold mb-1">40+</p>
+        <p class="text-xs text-ink-muted uppercase tracking-wide">Projetos entregues</p>
+      </div>
+    </div>-->
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="reveal lift bg-bg-panel border border-ink-line rounded-2xl p-7">
+        <h3 class="font-semibold text-ink-light mb-2">Missão</h3>
+        <p class="text-sm text-ink-muted">Aproximar teoria e prática, criando oportunidades para desenvolver
+habilidades técnicas e profissionais por meio de projetos reais,
+colaboração e experiências que conectam a academia ao mercado.</p>
+      </div>
+      <div class="reveal lift bg-bg-panel border border-ink-line rounded-2xl p-7">
+        <h3 class="font-semibold text-ink-light mb-2">Visão</h3>
+        <p class="text-sm text-ink-muted">Ser referência entre ligas acadêmicas de tecnologia da região,
+reconhecida pela qualidade dos projetos, pela inovação e pela
+formação de talentos preparados para os desafios do mercado.</p>
+      </div>
+      <div class="reveal lift bg-bg-panel border border-ink-line rounded-2xl p-7">
+        <h3 class="font-semibold text-ink-light mb-2">Valores</h3>
+        <p class="text-sm text-ink-muted">Colaboração, aprendizado contínuo, protagonismo e inclusão,
+valorizando a troca de conhecimento e a evolução coletiva,
+porque todo especialista já foi iniciante um dia.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       PARCERIAS
+       ===================================================== -->
+  <section id="parcerias" class="bg-bg-panel border-y border-ink-line">
+    <div class="max-w-7xl mx-auto px-5 md:px-8 py-24 md:py-32">
+      <div class="reveal mb-14 max-w-2xl">
+        <p class="eyebrow text-sm mb-3">parcerias.conectar()</p>
+        <h2 class="font-mono font-bold text-3xl md:text-5xl text-ink-light mb-6">Parcerias</h2>
+        <p class="text-ink-muted">Empresas e organizações que acreditam no desenvolvimento de talentos podem apoiar a LaADS por meio de mentorias, oportunidades e infraestrutura. Em troca, aproximam-se de uma nova geração de desenvolvedores, fortalecem sua marca e contribuem para a formação de profissionais mais preparados para o mercado.</p>
+      </div>
+
+      <!-- Populated by renderSponsors() from the shared data layer (see closing script) -->
+      <div id="sponsorsGrid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12"></div>
+
+      <div class="reveal bg-bg-deep border border-gold/30 rounded-2xl p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div>
+          <h3 class="font-semibold text-lg text-ink-light mb-1">Quer apoiar a próxima geração de desenvolvedores?</h3>
+          <p class="text-sm text-ink-muted">Fale com a coordenação da liga sobre formatos de parceria e patrocínio.</p>
+        </div>
+        <a href="#contato" class="btn-neon shrink-0">Ser parceiro<span></span><span></span><span></span><span></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       CONTATO
+       ===================================================== -->
+  <section id="contato" class="max-w-7xl mx-auto px-5 md:px-8 py-24 md:py-32">
+    <div class="grid lg:grid-cols-2 gap-14">
+
+      <div class="reveal">
+        <p class="eyebrow text-sm mb-3">contato.enviar()</p>
+        <h2 class="font-mono font-bold text-3xl md:text-5xl text-ink-light mb-6">Fale com a gente</h2>
+        <p class="text-ink-muted mb-10 max-w-md">Dúvidas sobre inscrição, eventos ou parcerias? Preencha o formulário ou use um dos canais abaixo.</p>
+
+        <div class="space-y-5 font-mono text-sm">
+          <div class="flex items-center gap-3">
+            <span class="text-gold">e-mail</span>
+            <span class="text-ink-muted">contato@laads.edu.br</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-gold">instagram</span>
+            <a href="https://www.instagram.com/la.ads/" target="_blank" rel="noopener noreferrer" class="text-ink-muted hover:text-gold transition-colors">@la.ads</a>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-gold">local</span>
+            <span class="text-ink-muted">Bloco de Tecnologia, sala 14</span>
+          </div>
+        </div>
+      </div>
+
+      <form class="reveal lift bg-bg-panel border border-ink-line rounded-2xl p-8 space-y-5" onsubmit="return handleContactSubmit(event)">
+        <div>
+          <label class="block text-xs font-mono text-ink-muted mb-2" for="name">nome</label>
+          <input id="name" required type="text" placeholder="Seu nome completo"
+            class="w-full bg-bg-deep border border-ink-line rounded-md px-4 py-3 text-sm text-ink-light placeholder:text-ink-muted/60 focus:outline-none focus:border-gold transition-colors">
+        </div>
+        <div>
+          <label class="block text-xs font-mono text-ink-muted mb-2" for="email">email</label>
+          <input id="email" required type="email" placeholder="voce@exemplo.com"
+            class="w-full bg-bg-deep border border-ink-line rounded-md px-4 py-3 text-sm text-ink-light placeholder:text-ink-muted/60 focus:outline-none focus:border-gold transition-colors">
+        </div>
+        <div>
+          <label class="block text-xs font-mono text-ink-muted mb-2" for="msg">mensagem</label>
+          <textarea id="msg" required rows="4" placeholder="Como podemos ajudar?"
+            class="w-full bg-bg-deep border border-ink-line rounded-md px-4 py-3 text-sm text-ink-light placeholder:text-ink-muted/60 focus:outline-none focus:border-gold transition-colors resize-none"></textarea>
+        </div>
+        <div class="flex items-start gap-3">
+          <input id="msgConsent" type="checkbox" required
+            class="mt-1 w-4 h-4 rounded border-ink-line bg-bg-deep accent-[#FFD166] shrink-0">
+          <label for="msgConsent" class="text-xs text-ink-muted leading-relaxed">
+            Concordo com o uso do meu nome e e-mail para responder a esta mensagem, conforme a
+            <a href="privacidade.html" target="_blank" rel="noopener noreferrer" class="text-gold hover:underline">Política de Privacidade</a>.
+          </label>
+        </div>
+        <button type="submit" class="btn-neon w-full">Enviar mensagem<span></span><span></span><span></span><span></span></button>
+        <p id="formStatus" class="text-xs text-ink-muted font-mono min-h-[1rem]"></p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<!-- =========================================================
+     FOOTER
+     ========================================================= -->
+<footer class="border-t border-ink-line">
+  <div class="max-w-7xl mx-auto px-5 md:px-8 py-10 flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <span class="w-8 h-8 rounded-full logo-ring p-[2px] grid place-items-center overflow-hidden">
+        <img src="assets/logo_laads.jpeg" alt="Logo LaADS" class="w-full h-full rounded-full object-cover">
+      </span>
+      <span class="font-mono text-xs text-ink-muted">LaADS © 2026 · Liga Acadêmica de Análise e Desenvolvimento de Sistemas</span>
+    </div>
+
+    <a href="privacidade.html" class="font-mono text-[11px] text-ink-muted hover:text-gold transition-colors">política de privacidade</a>
+
+    <!-- Rede social oficial da liga -->
+    <a href="https://www.instagram.com/la.ads/" target="_blank" rel="noopener noreferrer" aria-label="Instagram da LaADS" class="social-ig">
+      <i class="fa-brands fa-instagram"></i>
+    </a>
+    <!-- index.html, linha ~801 -->
+<a href="admin.html" class="font-mono text-[11px] text-ink-muted hover:text-gold transition-colors">feito por estudantes, para estudantes.</a>
+  </div>
+</footer>
+
+<!-- =========================================================
+     CAMADA DE DADOS E COMPONENTES — módulos compartilhados com
+     admin.html. Nenhum destes arquivos acessa localStorage
+     diretamente, exceto storage.service.js.
+     ========================================================= -->
+<script src="js/services/storage.service.js"></script>
+<script src="js/services/api.service.js"></script>
+<script src="js/utils/dom.utils.js"></script>
+<script src="js/utils/format.utils.js"></script>
+<script src="js/components/toast.component.js"></script>
+
+<script>
+  const Api = Laads.Api;
+  const { escapeHtml, safeUrl } = Laads.DomUtils;
+  const { maskPhone, PHONE_PATTERN, EMAIL_PATTERN } = Laads.FormatUtils;
+  const Toast = Laads.Toast;
+
+  /* =========================================================
+     0) RENDERIZAÇÃO — eventos, patrocinadores e squads
+     Lê da camada de dados compartilhada (Laads.Api) e injeta
+     no DOM antes do passo 3) abaixo escanear ".reveal" para o
+     fade-in de rolagem.
+     ========================================================= */
+
+  /* ---- Eventos: builds the reveal-on-hover cards ---- */
+  async function renderEvents(){
+    const grid = document.getElementById('eventosGrid');
+    if (!grid) return;
+    const events = await Api.getEvents();
+
+    if (!events.length){
+      grid.innerHTML = '<p class="font-mono text-xs text-ink-muted">Nenhum evento cadastrado ainda. Use o painel administrativo para publicar o primeiro.</p>';
+      return;
+    }
+
+    grid.innerHTML = events.map(ev => `
+      <article class="reveal ev-card">
+        <div class="ev-image" style="background-image:url('${escapeHtml(ev.image)}')"></div>
+
+        <!-- Always visible: type badge + title + date, over a bottom scrim -->
+        <div class="ev-caption">
+          <span class="font-mono text-[10px] text-gold uppercase tracking-widest mb-1">${escapeHtml(ev.tipo || 'Evento')}</span>
+          <h3 class="font-mono font-bold text-lg text-white leading-snug">${escapeHtml(ev.title)}</h3>
+          <p class="font-mono text-[11px] text-ink-muted mt-1">${escapeHtml(ev.date || '')}${ev.time ? ' · ' + escapeHtml(ev.time) : ''}</p>
+        </div>
+
+        <!-- Hover-only: full description -->
+        <div class="ev-desc">
+          <span class="font-mono text-[10px] text-gold uppercase tracking-widest mb-2">${escapeHtml(ev.tipo || 'Evento')}</span>
+          <h3 class="font-mono font-bold text-lg text-white mb-1">${escapeHtml(ev.title)}</h3>
+          ${ev.subtitle ? `<p class="text-sm font-semibold text-ink-light/90 mb-2">${escapeHtml(ev.subtitle)}</p>` : ''}
+          <p class="font-mono text-[11px] text-gold-dim mb-3">${escapeHtml(ev.date || '')}${ev.time ? ' · ' + escapeHtml(ev.time) : ''}</p>
+          <p class="text-sm leading-relaxed text-ink-light/90">${escapeHtml(ev.description || '')}</p>
+        </div>
+      </article>
+    `).join('');
+    observeReveals(grid);
+  }
+
+  /* ---- Patrocinadores: builds the clickable logo tiles ---- */
+  async function renderSponsors(){
+    const grid = document.getElementById('sponsorsGrid');
+    if (!grid) return;
+    const sponsors = await Api.getSponsors();
+
+    if (!sponsors.length){
+      grid.innerHTML = '<p class="font-mono text-xs text-ink-muted col-span-full">Nenhum patrocinador cadastrado ainda.</p>';
+      return;
+    }
+
+    grid.innerHTML = sponsors.map(sp => `
+      <a href="${escapeHtml(safeUrl(sp.url))}" target="_blank" rel="noopener noreferrer" class="reveal sponsor-tile" title="${escapeHtml(sp.name)}">
+        <img src="${escapeHtml(sp.logo)}" alt="Logo ${escapeHtml(sp.name)}" loading="lazy">
+        <span class="sponsor-name">${escapeHtml(sp.name)}</span>
+      </a>
+    `).join('');
+    observeReveals(grid);
+  }
+
+  /* ---- Faça parte: popula o <select> de squads a partir do painel administrativo ---- */
+  async function renderSquadOptions(){
+    const select = document.getElementById('suSquad');
+    if (!select) return;
+    const squads = await Api.getSquads();
+
+    if (!squads.length){
+      select.innerHTML = '<option value="" disabled selected>Nenhum squad cadastrado ainda</option>';
+      select.disabled = true;
+      return;
+    }
+
+    select.disabled = false;
+    select.innerHTML = '<option value="" disabled selected>Selecione um squad</option>' +
+      squads.map(sq => `<option value="${escapeHtml(sq)}">${escapeHtml(sq)}</option>`).join('');
+  }
+
+  (async function initHomePage(){
+    await renderEvents();
+    await renderSponsors();
+    await renderSquadOptions();
+  })();
+
+  /* =========================================================
+     1) SCROLL-DRIVEN HERO ZOOM & BLUR
+     Reads window.scrollY on every rAF tick (throttled, not on
+     every scroll event) and maps it to two CSS custom
+     properties consumed by the .hero-media transform/filter.
+     Scrolling down -> zoom OUT (scale decreases) + blur UP.
+     ========================================================= */
+  (function heroScrollEffect(){
+    const heroMedia = document.getElementById('heroMedia');
+    const heroSection = document.getElementById('top');
+    let ticking = false;
+
+    function update(){
+      const heroHeight = heroSection.offsetHeight || 1;
+      // progress: 0 at top of hero, 1 once scrolled past the hero's height
+      const progress = Math.min(Math.max(window.scrollY / heroHeight, 0), 1);
+
+      // Zoom OUT as user scrolls down: 1.18 -> 1.0 (same curve as the reference video hero)
+      const zoom = 1.18 - (progress * 0.18);
+      // Blur increases 0px -> 14px
+      const blur = progress * 14;
+
+      heroMedia.style.setProperty('--hero-zoom', zoom.toFixed(3));
+      heroMedia.style.setProperty('--hero-blur', blur.toFixed(2) + 'px');
+
+      ticking = false;
+    }
+
+    function onScroll(){
+      if (!ticking){
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update(); // set initial state
+  })();
+
+  /* =========================================================
+     2) MOBILE BURGER MENU
+     ========================================================= */
+  (function mobileMenu(){
+    const btn = document.getElementById('burgerBtn');
+    const menu = document.getElementById('mobileMenu');
+
+    btn.addEventListener('click', () => {
+      const isOpen = menu.classList.toggle('open');
+      btn.classList.toggle('open', isOpen);
+      btn.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    // Close menu after tapping a link
+    menu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        menu.classList.remove('open');
+        btn.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+
+  /* =========================================================
+     3) FADE-IN ON SCROLL (IntersectionObserver)
+     Exposta como window.observeReveals() porque os cards de
+     eventos/patrocinadores/squads são inseridos dinamicamente
+     DEPOIS que este observer roda pela primeira vez (são
+     carregados via await Api.get...()). Sem re-observar, esses
+     elementos ficam com opacity:0 para sempre — visíveis ao
+     clique (o link funciona) mas invisíveis na tela.
+     ========================================================= */
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting){
+        entry.target.classList.add('is-visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  function observeReveals(root = document){
+    root.querySelectorAll('.reveal:not(.is-visible)').forEach(el => revealObserver.observe(el));
+  }
+
+  observeReveals();
+
+  /* =========================================================
+     4) ACTIVE-SECTION HIGHLIGHT for the terminal tab-strip
+     ========================================================= */
+  (function activeTabs(){
+    const sections = ['eventos','faca-parte','quem-somos','parcerias','contato']
+      .map(id => document.getElementById(id));
+    const tabs = document.querySelectorAll('[data-tab]');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting){
+          const id = entry.target.id;
+          tabs.forEach(tab => {
+            tab.classList.toggle('active', tab.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+
+    sections.forEach(section => { if (section) observer.observe(section); });
+  })();
+
+  /* =========================================================
+     5) HEADER SHADOW ON SCROLL (small polish)
+     ========================================================= */
+  (function headerShadow(){
+    const header = document.getElementById('siteHeader');
+    function update(){
+      header.classList.toggle('shadow-lg', window.scrollY > 10);
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  })();
+
+  /* =========================================================
+     6) CONTACT FORM (demo handler — no backend wired up)
+     ========================================================= */
+  async function handleContactSubmit(event){
+    event.preventDefault();
+    const status = document.getElementById('formStatus');
+
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const msg = document.getElementById('msg').value.trim();
+    const consent = document.getElementById('msgConsent').checked;
+
+    if (!consent){
+      status.textContent = '> é necessário concordar com o uso dos seus dados para enviar a mensagem.';
+      return false;
+    }
+
+    const messages = await Api.getMessages();
+    messages.unshift({
+      id: 'msg-' + Date.now(),
+      name, email, message: msg,
+      date: new Date().toLocaleString('pt-BR'),
+      read: false,
+      consentLGPD: true,
+    });
+    const result = await Api.setMessages(messages);
+
+    if (!result.ok){
+      if (result.error === 'QUOTA_EXCEEDED'){
+        status.textContent = '> armazenamento do navegador cheio. não foi possível salvar a mensagem.';
+        Toast.error('Armazenamento do navegador cheio. Libere espaço e tente novamente.');
+      }else{
+        status.textContent = '> não foi possível enviar a mensagem. tente novamente.';
+        Toast.error('Não foi possível enviar a mensagem.');
+      }
+      return false;
+    }
+
+    status.textContent = '> mensagem enviada com sucesso. em breve entraremos em contato.';
+    event.target.reset();
+    return false;
+  }
+
+  /* Máscara de telefone e padrões de validação: ver js/utils/format.utils.js */
+
+  /* =========================================================
+     8) FORMULÁRIO DE INSCRIÇÃO (Faça parte)
+     Validado no cliente e gravado no mesmo armazenamento local
+     lido pelo painel administrativo (seção "Inscrições").
+     Observação: por se tratar de um site estático (sem backend),
+     este envio fica salvo no navegador de quem preenche — para
+     centralizar as inscrições em um único lugar acessível pela
+     coordenação, é necessário publicar o painel com um backend
+     real ou orientar quem preenche a também enviar/exportar os
+     dados (ex.: expandir o botão de envio para também acionar um
+     serviço de formulários/e-mail).
+     ========================================================= */
+  function handleSignupSubmit(event){
+    event.preventDefault();
+    const status = document.getElementById('signupStatus');
+
+    const name = document.getElementById('suName').value.trim();
+    const periodo = document.getElementById('suPeriodo').value.trim();
+    const phone = document.getElementById('suPhone').value.trim();
+    const email = document.getElementById('suEmail').value.trim();
+    const squad = document.getElementById('suSquad').value;
+    const message = document.getElementById('suMsg').value.trim();
+    const consent = document.getElementById('suConsent').checked;
+
+    if (!name || name.length > 120){
+      status.textContent = '> informe um nome válido.';
+      return false;
+    }
+    if (!/^\d{1,2}$/.test(periodo)){
+      status.textContent = '> informe o período em número (ex: 3).';
+      return false;
+    }
+    if (!PHONE_PATTERN.test(phone)){
+      status.textContent = '> telefone inválido. use o formato (00) 0 0000-0000.';
+      return false;
+    }
+    if (!EMAIL_PATTERN.test(email) || email.length > 180){
+      status.textContent = '> informe um email válido.';
+      return false;
+    }
+    if (!squad){
+      status.textContent = '> selecione um squad.';
+      return false;
+    }
+    if (!consent){
+      status.textContent = '> é necessário concordar com o uso dos seus dados para se inscrever.';
+      return false;
+    }
+
+    (async () => {
+      const signups = await Api.getSignups();
+      signups.unshift({
+        id: 'sig-' + Date.now(),
+        name, periodo, phone, email, squad,
+        message: message.slice(0, 1000),
+        date: new Date().toLocaleString('pt-BR'),
+        read: false,
+        consentLGPD: true,
+      });
+      const result = await Api.setSignups(signups);
+
+      if (!result.ok){
+        if (result.error === 'QUOTA_EXCEEDED'){
+          status.textContent = '> armazenamento do navegador cheio. não foi possível salvar a inscrição.';
+          Toast.error('Armazenamento do navegador cheio. Libere espaço e tente novamente.');
+        }else{
+          status.textContent = '> não foi possível enviar a inscrição. tente novamente.';
+          Toast.error('Não foi possível enviar a inscrição.');
+        }
+        return;
+      }
+
+      status.textContent = '> inscrição enviada com sucesso! em breve entraremos em contato.';
+      event.target.reset();
+      await renderSquadOptions();
+    })();
+
+    return false;
+  }
+</script>
+
+</body>
+</html>
