@@ -1,1 +1,39 @@
+/* =============================================================
+   DOM UTILS
+   ---------------------------------------------------------------
+   Funções puras de apoio para renderização segura de HTML e
+   exportação de dados. Sem estado, sem efeitos colaterais além
+   do necessário.
+   ============================================================= */
+(function (global) {
+  'use strict';
+
+  function escapeHtml(str) {
+    return String(str == null ? '' : str)
+      .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+  }
+
+  // Só permite renderizar href http/https — bloqueia javascript:, data:
+  // e outros esquemas que poderiam ser usados para XSS armazenado via
+  // links de patrocinador.
+  function safeUrl(url) {
+    try {
+      const parsed = new URL(url, global.location.href);
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return parsed.href;
+    } catch (e) { /* cai no fallback abaixo */ }
+    return '#';
+  }
+
+  // Escapa um campo para CSV: cerca com aspas, duplica aspas internas e
+  // neutraliza injeção de fórmula (=, +, -, @, tab, CR) ao abrir em planilhas.
+  function csvField(value) {
+    const str = String(value == null ? '' : value);
+    const sanitized = /^[=+\-@\t\r]/.test(str) ? "'" + str : str;
+    return '"' + sanitized.replaceAll('"', '""') + '"';
+  }
+
+  global.Laads = global.Laads || {};
+  global.Laads.DomUtils = { escapeHtml, safeUrl, csvField };
+})(window);
 
