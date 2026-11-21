@@ -10,6 +10,7 @@
 @import "tailwindcss" source(none);
 @source "../templates";
 @source "../public/static/js";
+@source "../laads/utils.py";
 
 @custom-variant dark (&:is(.dark *));
 
