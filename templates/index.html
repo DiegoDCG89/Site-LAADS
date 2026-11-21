@@ -329,7 +329,7 @@
   <footer class="border-t border-border py-10">
     <div class="mx-auto flex max-w-6xl flex-col justify-between gap-4 px-6 font-mono text-xs text-muted-foreground md:flex-row md:items-center">
       <span>{{ cfg.footer_left }}</span>
-      <span class="flex items-center gap-2">{{ icon('radar', 'h-3.5 w-3.5 text-electric') }} {{ cfg.footer_mid }}</span>
+      <a href="{{ url_for('admin.dashboard') }}" rel="nofollow" class="flex items-center gap-2 transition-colors hover:text-primary">{{ icon('radar', 'h-3.5 w-3.5 text-electric') }} {{ cfg.footer_mid }}</a>
       <a href="#topo" class="flex items-center gap-2 text-electric transition-colors hover:text-primary">{{ icon('chevron-up', 'h-3.5 w-3.5') }} {{ cfg.footer_top }}</a>
     </div>
   </footer>
