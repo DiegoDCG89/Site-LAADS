@@ -109,7 +109,7 @@
     <div class="circuit-grid absolute inset-0"></div>
     <div class="grid-floor absolute inset-x-[-20%] bottom-0 h-64 opacity-45"></div>
 
-    <div class="relative mx-auto grid w-full max-w-6xl gap-14 px-6 pt-28 pb-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+    <div class="relative mx-auto w-full max-w-6xl px-6 pt-28 pb-20">
       <div>
         <div class="mb-7 flex flex-wrap items-center gap-3">
           {% if cfg.hero_chip %}
@@ -149,38 +149,6 @@
         {% endif %}
       </div>
 
-      {% if site.console or site.hud_metrics %}
-      {% call reveal(200, "hidden lg:block") %}
-      <div class="hud-panel relative p-5">
-        {{ hud_corners() }}
-        <div class="mb-4 flex items-center justify-between border-b border-border pb-3">
-          <span class="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-            {{ icon('cpu', 'h-3.5 w-3.5 text-electric') }} {{ cfg.hud_title }}
-          </span>
-          <span class="flex gap-1.5">
-            <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-            <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
-            <span class="h-1.5 w-1.5 rounded-full bg-electric"></span>
-          </span>
-        </div>
-        <div class="min-h-[9.5rem] font-mono text-[11px] leading-relaxed" data-console>
-          {% for line in site.console %}
-          <p class="{{ 'text-primary' if line.texto.startswith('$') else 'text-muted-foreground' }}" data-console-line>{{ line.texto }}</p>
-          {% endfor %}
-        </div>
-        {% if site.hud_metrics %}
-        <div class="mt-5 grid grid-cols-2 gap-3 font-mono text-[11px]">
-          {% for m in site.hud_metrics %}
-          <div class="rounded-md border border-border/80 bg-background/50 px-3 py-2">
-            <p class="text-muted-foreground">{{ m.rotulo }}</p>
-            <p class="text-primary">{{ m.valor }}</p>
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %}
-      </div>
-      {% endcall %}
-      {% endif %}
     </div>
 
     {% if site.ticker %}
@@ -281,24 +249,10 @@
   {# ---------- QUEM SOMOS ---------- #}
   {% if site.flags.sec_quemsomos %}
   {% call section("quem-somos", "%02d"|format(order.index('quem-somos') + 1), cfg.qs_eyebrow, cfg.qs_title, cfg.qs_desc, alt=(order.index('quem-somos') % 2 == 1)) %}
-    <div class="grid gap-10 lg:grid-cols-2">
-      <div class="space-y-4 text-muted-foreground">
+    <div>
+      <div class="max-w-3xl space-y-4 text-muted-foreground">
         {% for p in site.about_paragraphs %}<p>{{ p }}</p>{% endfor %}
       </div>
-      {% if site.stats_sobre %}
-      <div class="grid grid-cols-3 gap-4">
-        {% for s in site.stats_sobre %}
-        <div class="glass-card p-5 text-center">
-          {% if s.animar and s.valor.isdigit() %}
-          <span class="font-display text-2xl font-bold text-gradient" data-countup="{{ s.valor }}" data-suffix="{{ s.sufixo }}">{{ s.valor }}{{ s.sufixo }}</span>
-          {% else %}
-          <p class="font-display text-2xl font-bold text-gradient">{{ s.valor }}{{ s.sufixo }}</p>
-          {% endif %}
-          <p class="mt-1 text-xs uppercase tracking-wide text-muted-foreground">{{ s.rotulo }}</p>
-        </div>
-        {% endfor %}
-      </div>
-      {% endif %}
     </div>
     {% if site.pilares %}
     <div class="mt-10 grid gap-6 md:grid-cols-3">

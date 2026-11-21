@@ -75,10 +75,10 @@ No painel, a **Visão geral** mostra se Planilha e Drive estão conectados e exp
 | Menu | O que edita |
 |---|---|
 | **Site** | Logo, título/descrição para o Google, imagem de compartilhamento, nomes do menu, ligar/desligar seções |
-| **Topo** | Título, textos, botões, imagem de fundo, números, painel técnico, console animado, faixa de palavras |
+| **Topo** | Título, textos, botões, imagem de fundo, números, faixa de palavras |
 | **Eventos** | Textos da seção + cards de eventos (com capa opcional) |
 | **Faça parte** | Textos, benefícios, opções de squad do formulário |
-| **Quem somos** | Texto, números (com contagem animada), Missão/Visão/Valores |
+| **Quem somos** | Texto institucional e Missão/Visão/Valores |
 | **Parcerias** | Chamada + logos de parceiros |
 | **Contato** | Textos e canais (e-mail, Instagram, WhatsApp…) |
 | **Recebidos** | Inscrições e mensagens do site (marcar como lido, excluir, baixar CSV) |

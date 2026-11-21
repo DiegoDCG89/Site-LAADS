@@ -20,19 +20,6 @@ DEFAULT_ROWS: dict[str, list[dict[str, str]]] = {
         {"valor": "40+", "rotulo": "projetos"},
         {"valor": "12", "rotulo": "parceiros"},
     ],
-    "hud_metrics": [
-        {"rotulo": "latência", "valor": "12ms"},
-        {"rotulo": "uptime", "valor": "99.9%"},
-        {"rotulo": "squads", "valor": "08"},
-        {"rotulo": "versão", "valor": "2026.11"},
-    ],
-    "console": [
-        {"texto": "$ laads init --turma 2026"},
-        {"texto": "> modulos carregados: eventos · mentoria · squads"},
-        {"texto": "> parcerias ativas: 12 empresas conectadas"},
-        {"texto": "> membros online: 180"},
-        {"texto": "$ status: PRONTO PARA CONSTRUIR"},
-    ],
     "ticker": [{"texto": t} for t in (
         "front-end", "back-end", "dados & ia", "ux/ui", "devops",
         "seguranca", "mobile", "cloud", "open source",
@@ -43,11 +30,6 @@ DEFAULT_ROWS: dict[str, list[dict[str, str]]] = {
         {"icone": "briefcase", "texto": "Acesso direto a vagas de estágio das empresas parceiras."},
     ],
     "squads": [{"nome": n} for n in ("Front-end", "Back-end", "Dados & IA", "UX/UI")],
-    "stats_sobre": [
-        {"valor": "2026", "sufixo": "", "rotulo": "Fundação", "animar": "NÃO"},
-        {"valor": "180", "sufixo": "+", "rotulo": "Membros", "animar": "SIM"},
-        {"valor": "40", "sufixo": "+", "rotulo": "Projetos", "animar": "SIM"},
-    ],
     "pilares": [
         {"icone": "target", "titulo": "Missão",
          "texto": "Aproximar teoria e prática por meio de projetos reais, colaboração e experiências que "

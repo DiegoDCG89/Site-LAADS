@@ -127,8 +127,6 @@ GROUPS: tuple[Group, ...] = (
               help="Use #eventos, #contato... para rolar a página, ou um endereço https://."),
             F("hero_cta2_label", "Botão secundário: texto", d="Ver próximos eventos", maxlength=30),
             F("hero_cta2_link", "Botão secundário: link", "url", d="#eventos"),
-            F("hud_title", "Título do painel técnico", d="laads.core", maxlength=30,
-              help="Cartão com o console, visível em telas largas."),
         ),
     ),
     Group(
@@ -244,21 +242,6 @@ COLLECTIONS: tuple[Collection, ...] = (
         label_key="valor", meta_keys=("rotulo",),
     ),
     Collection(
-        "hud_metrics", "Painel técnico", "indicador", "cpu",
-        "Os quadradinhos de dados do cartão técnico do topo (telas largas).",
-        (
-            F("rotulo", "Nome", required=True, maxlength=24, placeholder="latência"),
-            F("valor", "Valor", required=True, maxlength=20, placeholder="12ms"),
-        ),
-        label_key="rotulo", meta_keys=("valor",),
-    ),
-    Collection(
-        "console", "Console animado", "linha", "terminal",
-        "Linhas que aparecem uma a uma no console do topo. Linhas que começam com $ ganham destaque.",
-        (F("texto", "Texto da linha", required=True, maxlength=90, placeholder="$ laads init --turma 2026"),),
-        label_key="texto", gender="f",
-    ),
-    Collection(
         "ticker", "Faixa de palavras", "palavra", "radio",
         "A faixa de palavras que rola na base do topo.",
         (F("texto", "Palavra ou expressão", required=True, maxlength=30, placeholder="front-end"),),
@@ -278,19 +261,6 @@ COLLECTIONS: tuple[Collection, ...] = (
         "Opções do campo “squad” no formulário de inscrição.",
         (F("nome", "Nome do squad", required=True, maxlength=40, placeholder="Front-end"),),
         label_key="nome",
-    ),
-    Collection(
-        "stats_sobre", "Números de Quem somos", "número", "trophy",
-        "Os três cartões de números ao lado do texto institucional.",
-        (
-            F("valor", "Número", required=True, maxlength=10, placeholder="180",
-              help="Só o número, sem o +. Ex.: 180"),
-            F("sufixo", "Depois do número", maxlength=4, placeholder="+"),
-            F("rotulo", "Legenda", required=True, maxlength=24, placeholder="Membros"),
-            F("animar", "Animar contagem ao rolar a página", "bool", d="SIM",
-              help="Desligue para anos (ex.: 2026), que não devem contar de zero."),
-        ),
-        label_key="rotulo", meta_keys=("valor", "sufixo"),
     ),
     Collection(
         "pilares", "Missão, Visão e Valores", "cartão", "target",
@@ -370,8 +340,6 @@ ADMIN_MENU: tuple[tuple[str, tuple[tuple[str, str, str], ...]], ...] = (
     ("Topo", (
         ("group", "hero", "Textos e imagem"),
         ("list", "stats_hero", "Números"),
-        ("list", "hud_metrics", "Painel técnico"),
-        ("list", "console", "Console animado"),
         ("list", "ticker", "Faixa de palavras"),
     )),
     ("Eventos", (("group", "eventos", "Textos da seção"), ("list", "eventos", "Lista de eventos"))),
@@ -382,7 +350,6 @@ ADMIN_MENU: tuple[tuple[str, tuple[tuple[str, str, str], ...]], ...] = (
     )),
     ("Quem somos", (
         ("group", "quemsomos", "Textos"),
-        ("list", "stats_sobre", "Números"),
         ("list", "pilares", "Missão, Visão, Valores"),
     )),
     ("Parcerias", (("group", "parcerias", "Textos e chamada"), ("list", "parceiros", "Parceiros"))),
