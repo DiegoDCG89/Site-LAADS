@@ -1,0 +1,19 @@
+{% extends "admin/base.html" %}
+{% from "admin/_fields.html" import render_field, init_notice, page_head %}
+{% block title %}{{ g.title }}{% endblock %}
+{% block content %}
+{{ page_head("editar.textos()", g.title, g.desc) }}
+{% if needs_init %}<div class="mt-6">{{ init_notice() }}</div>{% endif %}
+<form method="post" class="mt-8 space-y-6" data-dirty-guard>
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="hud-panel space-y-6 p-6">
+    {% for f in g.fields %}{{ render_field(f, values[f.key], errors.get(f.key, '')) }}{% endfor %}
+  </div>
+  <div class="sticky bottom-4 z-10 flex items-center gap-3 rounded-xl border border-border bg-card/90 p-3 backdrop-blur-xl">
+    <button class="btn-solid" {{ 'disabled' if needs_init }}>Salvar alterações</button>
+    <a href="{{ url_for('public.index', preview=1) }}" target="_blank" class="btn-sm">Ver no site</a>
+    <span class="help ml-auto hidden sm:inline" data-dirty-label></span>
+  </div>
+</form>
+{% endblock %}
+{% block dialogs %}{% include "admin/_dialogs.html" %}{% endblock %}

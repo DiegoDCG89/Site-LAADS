@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Entrar · Painel LaADS</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;700;900&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css', v=asset_v) }}">
+</head>
+<body class="admin-bg min-h-screen bg-background text-foreground">
+  <div class="circuit-grid pointer-events-none fixed inset-0" aria-hidden="true"></div>
+  <main class="relative flex min-h-screen items-center justify-center px-6">
+    <form method="post" class="hud-panel relative w-full max-w-sm space-y-5 p-8">
+      <span class="hud-corner hud-tl"></span><span class="hud-corner hud-tr"></span>
+      <span class="hud-corner hud-bl"></span><span class="hud-corner hud-br"></span>
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <div>
+        <p class="eyebrow text-xs">painel.entrar()</p>
+        <h1 class="mt-2 font-display text-2xl font-bold">Painel de controle</h1>
+      </div>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}<p role="alert" class="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm">{{ msg }}</p>{% endfor %}
+      {% endwith %}
+      {% if blocked %}
+        <p role="alert" class="rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-sm">{{ blocked }}</p>
+      {% else %}
+        <label class="block space-y-2">
+          <span class="font-mono text-xs text-electric">senha</span>
+          <input type="password" name="password" class="field" required autofocus autocomplete="current-password">
+        </label>
+        <button class="btn-neon w-full justify-center">Entrar</button>
+      {% endif %}
+      <a href="{{ url_for('public.index') }}" class="block text-center font-mono text-xs text-muted-foreground hover:text-electric">voltar ao site</a>
+    </form>
+  </main>
+</body>
+</html>

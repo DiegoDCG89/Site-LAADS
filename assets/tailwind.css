@@ -1,0 +1,576 @@
+/*
+ * Entrada do Tailwind v4 (compilada para public/static/css/site.css).
+ * Os tokens de design (cores oklch, fontes, HUD, efeitos) vieram do projeto original (styles.css).
+ *
+ * Para recompilar depois de mexer em templates/JS:   npm run build:css
+ * Para recompilar sozinho enquanto edita:            npm run watch:css
+ *
+ * O arquivo compilado é versionado no Git, então o Vercel NÃO precisa rodar Node.
+ */
+@import "tailwindcss" source(none);
+@source "../templates";
+@source "../public/static/js";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system definition.
+ *
+ * The design lives in this file: oklch color tokens on the shadcn variables
+ * (--background, --foreground, --primary, --secondary, --muted, --accent, ...) plus
+ * new tokens as needed, font tokens, and custom styles and animations.
+ *
+ * The @theme inline block maps CSS custom properties to Tailwind utility
+ * classes (e.g. --color-primary -> bg-primary, text-primary).
+ *
+ * The :root and .dark blocks define the actual color values using oklch.
+ * All colors MUST use oklch format.
+ *
+ * To add a new semantic color:
+ * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-electric: var(--electric);
+  --color-electric-foreground: var(--electric-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "Space Mono", monospace;
+  --font-display: "Orbitron", "Space Mono", sans-serif;
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.75rem;
+  --background: oklch(0.16 0.055 268);
+  --foreground: oklch(0.94 0.02 265);
+  --card: oklch(0.21 0.065 268);
+  --card-foreground: oklch(0.94 0.02 265);
+  --popover: oklch(0.21 0.065 268);
+  --popover-foreground: oklch(0.94 0.02 265);
+  --primary: oklch(0.88 0.14 85);
+  --primary-foreground: oklch(0.16 0.055 268);
+  --secondary: oklch(0.26 0.075 268);
+  --secondary-foreground: oklch(0.94 0.02 265);
+  --muted: oklch(0.26 0.075 268);
+  --muted-foreground: oklch(0.74 0.04 265);
+  --accent: oklch(0.77 0.13 55);
+  --accent-foreground: oklch(0.16 0.055 268);
+  --electric: oklch(0.85 0.13 205);
+  --electric-foreground: oklch(0.16 0.055 268);
+  --destructive: oklch(0.65 0.2 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.32 0.075 268);
+  --input: oklch(0.32 0.075 268);
+  --ring: oklch(0.88 0.14 85);
+  --chart-1: oklch(0.88 0.14 85); --chart-2: oklch(0.77 0.13 55); --chart-3: oklch(0.85 0.13 205); --chart-4: oklch(0.7 0.1 200); --chart-5: oklch(0.5 0.1 265);
+  --sidebar: oklch(0.21 0.065 268); --sidebar-foreground: oklch(0.94 0.02 265); --sidebar-primary: oklch(0.88 0.14 85); --sidebar-primary-foreground: oklch(0.16 0.055 268); --sidebar-accent: oklch(0.26 0.075 268); --sidebar-accent-foreground: oklch(0.94 0.02 265); --sidebar-border: oklch(0.32 0.075 268); --sidebar-ring: oklch(0.88 0.14 85);
+  --gradient-gold: linear-gradient(120deg, var(--primary), var(--accent));
+  --gradient-neon: linear-gradient(115deg, var(--electric), var(--primary) 52%, var(--accent));
+  --shadow-glow: 0 0 40px -8px color-mix(in oklab, var(--primary) 55%, transparent);
+  --shadow-electric: 0 0 34px -10px color-mix(in oklab, var(--electric) 65%, transparent);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    overflow-x: hidden;
+  }
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-sans); }
+  ::selection { background: var(--primary); color: var(--primary-foreground); }
+}
+
+/* ------------------------------------------------------------------ *
+ * HUD chrome
+ * ------------------------------------------------------------------ */
+
+@utility scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    color-mix(in oklab, var(--foreground) 5%, transparent) 0 1px,
+    transparent 1px 3px
+  );
+  opacity: 0.35;
+}
+
+@utility hud-corner {
+  position: absolute;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 0 solid color-mix(in oklab, var(--electric) 70%, transparent);
+  filter: drop-shadow(0 0 6px color-mix(in oklab, var(--electric) 45%, transparent));
+}
+@utility hud-tl {
+  top: 0;
+  left: 0;
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+@utility hud-tr {
+  top: 0;
+  right: 0;
+  border-top-width: 1px;
+  border-right-width: 1px;
+}
+@utility hud-bl {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+}
+@utility hud-br {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+
+@utility vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+@utility led {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: var(--electric);
+  box-shadow: 0 0 12px 2px color-mix(in oklab, var(--electric) 70%, transparent);
+  animation: led-pulse 2.2s ease-in-out infinite;
+}
+
+@utility hud-line {
+  position: relative;
+  box-shadow: 0 0 12px -2px color-mix(in oklab, var(--primary) 60%, transparent);
+}
+
+@utility chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid color-mix(in oklab, var(--electric) 35%, var(--border));
+  border-radius: 9999px;
+  color: var(--electric);
+  background: color-mix(in oklab, var(--electric) 8%, transparent);
+}
+
+/* ------------------------------------------------------------------ *
+ * Surfaces
+ * ------------------------------------------------------------------ */
+
+@utility circuit-grid {
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--electric) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--electric) 8%, transparent) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(90% 70% at 50% 40%, black 20%, transparent 78%);
+}
+
+@utility grid-floor {
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--electric) 22%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--electric) 22%, transparent) 1px, transparent 1px);
+  background-size: 60px 60px;
+  transform: perspective(420px) rotateX(70deg);
+  transform-origin: 50% 100%;
+  animation: floor-run 9s linear infinite;
+  mask-image: linear-gradient(to top, black, transparent 72%);
+}
+
+@utility glass-card {
+  position: relative;
+  background: color-mix(in oklab, var(--card) 62%, transparent);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 6px);
+  backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--electric) 10%, transparent);
+  transition: transform 0.35s, border-color 0.35s, box-shadow 0.35s;
+  &:hover {
+    transform: translateY(-5px);
+    border-color: color-mix(in oklab, var(--electric) 55%, transparent);
+    box-shadow: var(--shadow-electric), inset 0 1px 0 color-mix(in oklab, var(--electric) 18%, transparent);
+  }
+}
+
+@utility hud-panel {
+  position: relative;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--electric) 6%, transparent), transparent 40%),
+    color-mix(in oklab, var(--card) 74%, transparent);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 6px);
+  backdrop-filter: blur(14px);
+}
+
+/* ------------------------------------------------------------------ *
+ * Type + motion
+ * ------------------------------------------------------------------ */
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  color: var(--primary);
+  &::before { content: "// "; color: var(--electric); }
+}
+
+@utility text-gradient {
+  background: var(--gradient-neon);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility text-glow {
+  text-shadow: 0 0 18px color-mix(in oklab, var(--electric) 45%, transparent);
+}
+
+@utility btn-neon {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 0.85rem 1.5rem;
+  border-radius: var(--radius);
+  background: var(--gradient-neon);
+  color: var(--primary-foreground);
+  box-shadow: var(--shadow-glow);
+  transition: transform 0.25s, box-shadow 0.25s;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, color-mix(in oklab, var(--foreground) 55%, transparent) 50%, transparent 70%);
+    transform: translateX(-120%);
+    animation: sheen 3.6s ease-in-out infinite;
+  }
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 60px -6px color-mix(in oklab, var(--electric) 70%, transparent);
+  }
+}
+
+@utility btn-ghost-neon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 0.85rem 1.5rem;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--electric) 55%, var(--border));
+  color: var(--electric);
+  background: color-mix(in oklab, var(--background) 50%, transparent);
+  backdrop-filter: blur(6px);
+  transition: background 0.25s, box-shadow 0.25s;
+  &:hover {
+    background: color-mix(in oklab, var(--electric) 12%, transparent);
+    box-shadow: var(--shadow-electric);
+  }
+}
+
+@utility field {
+  width: 100%;
+  background: color-mix(in oklab, var(--background) 80%, transparent);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  &::placeholder { color: color-mix(in oklab, var(--muted-foreground) 90%, transparent); }
+  &:focus {
+    outline: none;
+    border-color: var(--electric);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--electric) 45%, transparent), var(--shadow-electric);
+  }
+}
+
+@utility reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  filter: blur(6px);
+  transition:
+    opacity 0.85s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.85s cubic-bezier(0.2, 0.7, 0.2, 1),
+    filter 0.85s cubic-bezier(0.2, 0.7, 0.2, 1);
+  &[data-shown="true"] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@utility glitch {
+  position: relative;
+  display: inline-block;
+  &::before,
+  &::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+  &::before {
+    color: var(--electric);
+    animation: glitch-a 3.4s steps(2, end) infinite;
+  }
+  &::after {
+    color: var(--accent);
+    animation: glitch-b 2.9s steps(2, end) infinite;
+  }
+}
+
+@utility marquee-mask {
+  mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+}
+
+@utility marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-run 34s linear infinite;
+}
+
+@utility section-index {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 12vw, 9rem);
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in oklab, var(--electric) 30%, transparent);
+  user-select: none;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+@utility caret { animation: blink 1s step-end infinite; }
+
+@keyframes led-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.75); }
+}
+
+@keyframes sheen {
+  0%, 60% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+
+@keyframes floor-run {
+  to { background-position: 0 60px; }
+}
+
+@keyframes marquee-run {
+  to { transform: translateX(-50%); }
+}
+
+@keyframes glitch-a {
+  0%, 72%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0, 0); }
+  74% { clip-path: inset(12% 0 62% 0); transform: translate(-3px, -1px); }
+  78% { clip-path: inset(48% 0 22% 0); transform: translate(3px, 1px); }
+  82% { clip-path: inset(70% 0 8% 0); transform: translate(-2px, 0); }
+  86% { clip-path: inset(28% 0 48% 0); transform: translate(2px, -1px); }
+}
+
+@keyframes glitch-b {
+  0%, 66%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0, 0); }
+  68% { clip-path: inset(58% 0 18% 0); transform: translate(3px, 1px); }
+  72% { clip-path: inset(20% 0 58% 0); transform: translate(-3px, -1px); }
+  76% { clip-path: inset(80% 0 4% 0); transform: translate(2px, 0); }
+  80% { clip-path: inset(38% 0 40% 0); transform: translate(-2px, 1px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Complementos do projeto Flask (não existiam no original)
+ * ------------------------------------------------------------------ */
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--electric);
+    outline-offset: 2px;
+  }
+  .field:focus-visible { outline: none; }
+  button { cursor: pointer; }
+  button:disabled { cursor: not-allowed; opacity: 0.55; }
+  select.field option { background: var(--card); color: var(--foreground); }
+  [hidden] { display: none !important; }
+}
+
+/* Campo "isca" anti-spam: invisível para pessoas, visível para robôs */
+@utility hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Botões do painel */
+@utility btn-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.5rem 0.9rem;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid color-mix(in oklab, var(--electric) 45%, var(--border));
+  color: var(--electric);
+  background: color-mix(in oklab, var(--background) 50%, transparent);
+  transition: background 0.2s, box-shadow 0.2s, border-color 0.2s;
+  &:hover { background: color-mix(in oklab, var(--electric) 12%, transparent); }
+}
+@utility btn-solid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 0.65rem 1.2rem;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  transition: filter 0.2s, transform 0.2s;
+  &:hover { filter: brightness(1.08); transform: translateY(-1px); }
+}
+@utility btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.5rem 0.9rem;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid color-mix(in oklab, var(--destructive) 55%, var(--border));
+  color: var(--destructive);
+  background: transparent;
+  transition: background 0.2s;
+  &:hover { background: color-mix(in oklab, var(--destructive) 14%, transparent); }
+}
+
+/* Interruptor (checkbox estilizado) */
+@utility switch {
+  appearance: none;
+  position: relative;
+  width: 2.5rem;
+  height: 1.4rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  transition: background 0.2s, border-color 0.2s;
+  cursor: pointer;
+  &::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: calc(1.4rem - 8px);
+    height: calc(1.4rem - 8px);
+    border-radius: 9999px;
+    background: var(--muted-foreground);
+    transition: transform 0.2s, background 0.2s;
+  }
+  &:checked {
+    background: color-mix(in oklab, var(--primary) 28%, var(--secondary));
+    border-color: var(--primary);
+  }
+  &:checked::after {
+    transform: translateX(1.1rem);
+    background: var(--primary);
+  }
+}
+
+/* Linha arrastável nas listas do painel */
+@utility drag-over {
+  outline: 1px dashed var(--electric);
+  outline-offset: 3px;
+}
+
+/* Fundo do painel: grade sutil, sem animação */
+@utility admin-bg {
+  background-image:
+    radial-gradient(60% 40% at 50% 0%, color-mix(in oklab, var(--electric) 7%, transparent), transparent 70%);
+}
+
+/* Texto de ajuda e rótulo dos formulários do painel */
+@utility help {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+/* Links do menu superior: o estado ativo é aplicado pelo JS via data-active */
+@layer components {
+  .nav-link { color: var(--muted-foreground); transition: color 0.2s; }
+  .nav-link:hover { color: var(--electric); }
+  .nav-link .nav-line { width: 1rem; height: 1px; background: var(--border); transition: width 0.2s, background 0.2s; }
+  .nav-link:hover .nav-line { width: 1.5rem; background: var(--electric); }
+  .nav-link[data-active="true"] { color: var(--primary); }
+  .nav-link[data-active="true"] .nav-line { width: 1.5rem; background: var(--primary); }
+}

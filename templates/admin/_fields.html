@@ -1,0 +1,65 @@
+{# Campo genérico do painel, gerado a partir do schema (F). #}
+{% macro render_field(f, value, error="") -%}
+{% set id = 'f-' ~ f.key %}
+<div class="space-y-2" {% if error %}data-invalid{% endif %}>
+  {% if f.type == 'bool' %}
+  <label class="flex cursor-pointer items-center gap-3">
+    <input type="hidden" name="{{ f.key }}" value="NÃO">
+    <input type="checkbox" class="switch" name="{{ f.key }}" value="SIM" id="{{ id }}" {{ 'checked' if value|string|lower in ['sim', 'true', '1'] else '' }}>
+    <span class="text-sm font-medium">{{ f.label }}</span>
+  </label>
+  {% else %}
+  <label for="{{ id }}" class="block text-sm font-medium">{{ f.label }}{% if f.required %} <span class="text-accent" title="obrigatório">*</span>{% endif %}</label>
+  {% if f.type == 'textarea' %}
+    <textarea id="{{ id }}" name="{{ f.key }}" rows="{{ 7 if f.maxlength > 500 else 3 }}" maxlength="{{ f.maxlength + 50 }}" class="field resize-y" placeholder="{{ f.placeholder }}" data-counter="{{ f.maxlength }}" {{ 'required' if f.required }}>{{ value }}</textarea>
+  {% elif f.type == 'icon' %}
+    <div data-icon-field>
+      <input type="hidden" name="{{ f.key }}" value="{{ value }}" id="{{ id }}">
+      <button type="button" class="btn-sm" data-icon-open>
+        <span data-icon-preview>{{ icon(value or 'zap', 'h-4 w-4') }}</span>
+        <span data-icon-name>{{ value or 'zap' }}</span> · trocar
+      </button>
+    </div>
+  {% elif f.type == 'image' %}
+    {% set default_src = url_for('static', filename='img/hero-futuristic.jpg') if f.key == 'hero_image' else '' %}
+    <div data-img-field data-default="{{ default_src }}" class="flex flex-wrap items-center gap-4 rounded-lg border border-border bg-background/40 p-3">
+      <input type="hidden" name="{{ f.key }}" value="{{ value }}" id="{{ id }}">
+      <div class="flex h-20 w-32 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-secondary/50">
+        <img data-img-preview alt="" class="h-full w-full object-contain" {% if value %}src="{{ img_url(value) }}"{% elif default_src %}src="{{ default_src }}"{% else %}hidden{% endif %}>
+        <span data-img-empty class="px-2 text-center font-mono text-[10px] text-muted-foreground" {% if value or default_src %}hidden{% endif %}>sem imagem</span>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" class="btn-sm" data-img-upload>{{ icon('download', 'h-3.5 w-3.5 rotate-180') }} Enviar</button>
+        <button type="button" class="btn-sm" data-img-library>{{ icon('layers', 'h-3.5 w-3.5') }} Biblioteca</button>
+        <button type="button" class="btn-danger" data-img-clear {% if not value %}hidden{% endif %}>Remover</button>
+      </div>
+      <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden data-img-file>
+      <p class="help w-full" data-img-status role="status"></p>
+    </div>
+  {% elif f.type == 'select' %}
+    <select id="{{ id }}" name="{{ f.key }}" class="field">{% for o in f.options %}<option {{ 'selected' if o == value }}>{{ o }}</option>{% endfor %}</select>
+  {% else %}
+    <input id="{{ id }}" name="{{ f.key }}" type="{{ 'number' if f.type == 'number' else 'text' }}" value="{{ value }}" class="field" placeholder="{{ f.placeholder }}" maxlength="{{ f.maxlength + 50 }}" data-counter="{{ f.maxlength }}" {{ 'required' if f.required }} {% if f.type == 'url' %}inputmode="url" autocapitalize="off" spellcheck="false"{% endif %}>
+  {% endif %}
+  {% endif %}
+  {% if f.help %}<p class="help">{{ f.help }}</p>{% endif %}
+  {% if error %}<p class="text-sm text-destructive" role="alert">{{ error }}</p>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro init_notice() -%}
+<div class="mb-6 rounded-lg border border-primary/40 bg-primary/10 p-4 text-sm">
+  <p class="font-medium">A planilha ainda não foi inicializada.</p>
+  <p class="mt-1 text-muted-foreground">Crie as abas e grave o conteúdo atual do site com um clique.</p>
+  <form method="post" action="{{ url_for('admin.system_init') }}" class="mt-3">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn-solid">Inicializar planilha</button>
+  </form>
+</div>
+{%- endmacro %}
+
+{% macro page_head(eyebrow, title, desc="") -%}
+<p class="eyebrow text-xs">{{ eyebrow }}</p>
+<h1 class="mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl">{{ title }}</h1>
+{% if desc %}<p class="mt-2 max-w-2xl text-sm text-muted-foreground">{{ desc }}</p>{% endif %}
+{%- endmacro %}

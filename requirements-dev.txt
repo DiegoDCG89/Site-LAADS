@@ -1,0 +1,3 @@
+-r requirements.txt
+google-auth-oauthlib>=1.2   # só para gerar o refresh token (scripts/get_refresh_token.py)
+pytest>=8

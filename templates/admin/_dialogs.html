@@ -1,0 +1,21 @@
+{# Seletor de ícones e biblioteca de imagens (abertos pelo admin.js). #}
+<dialog id="icon-dialog" class="m-auto w-[min(34rem,92vw)] rounded-xl border border-border bg-card p-5 text-foreground backdrop:bg-background/80 backdrop:backdrop-blur-sm">
+  <div class="mb-3 flex items-center justify-between">
+    <h2 class="font-display text-lg font-bold">Escolher ícone</h2>
+    <button type="button" class="text-muted-foreground" data-dialog-close aria-label="Fechar">{{ icon('x', 'h-5 w-5') }}</button>
+  </div>
+  <div class="grid max-h-[55vh] grid-cols-5 gap-2 overflow-y-auto pr-1 sm:grid-cols-7">
+    {% for name in icon_names %}
+    <button type="button" data-icon-pick="{{ name }}" title="{{ name }}" class="flex aspect-square items-center justify-center rounded-md border border-border text-muted-foreground hover:border-electric hover:text-electric">{{ icon(name, 'h-5 w-5') }}</button>
+    {% endfor %}
+  </div>
+</dialog>
+
+<dialog id="media-dialog" class="m-auto w-[min(44rem,94vw)] rounded-xl border border-border bg-card p-5 text-foreground backdrop:bg-background/80 backdrop:backdrop-blur-sm">
+  <div class="mb-3 flex items-center justify-between">
+    <h2 class="font-display text-lg font-bold">Biblioteca de imagens</h2>
+    <button type="button" class="text-muted-foreground" data-dialog-close aria-label="Fechar">{{ icon('x', 'h-5 w-5') }}</button>
+  </div>
+  <p class="help mb-3" data-media-status>Carregando…</p>
+  <div class="grid max-h-[60vh] grid-cols-3 gap-3 overflow-y-auto pr-1 sm:grid-cols-4" data-media-grid></div>
+</dialog>

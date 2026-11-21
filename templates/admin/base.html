@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}Painel{% endblock %} · Painel LaADS</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;700;900&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css', v=asset_v) }}">
+</head>
+<body class="admin-bg min-h-screen bg-background text-foreground">
+{% macro nav_href(kind, id) -%}
+  {%- if kind == 'group' %}{{ url_for('admin.group', gid=id) }}
+  {%- elif kind == 'list' %}{{ url_for('admin.list_view', cid=id) }}
+  {%- elif kind == 'inbox' %}{{ url_for('admin.inbox', iid=id) }}
+  {%- else %}{{ url_for('admin.media_page') }}{% endif -%}
+{%- endmacro %}
+{% macro nav_icon(kind, id) -%}
+  {%- if kind == 'group' %}{{ groups[id].icon }}
+  {%- elif kind in ('list', 'inbox') %}{{ collections[id].icon }}
+  {%- else %}camera{% endif -%}
+{%- endmacro %}
+{% set ep = request.endpoint or '' %}
+{% set va = request.view_args or {} %}
+
+<div class="flex min-h-screen">
+  <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col border-r border-border bg-card/95 backdrop-blur-xl transition-transform md:static md:translate-x-0 md:bg-card/40" data-sidebar>
+    <div class="flex h-16 shrink-0 items-center justify-between border-b border-border px-5">
+      <a href="{{ url_for('admin.dashboard') }}" class="flex items-center gap-2 font-display text-sm font-bold tracking-widest">
+        {{ icon('terminal', 'h-5 w-5 text-primary') }} PAINEL
+      </a>
+      <button type="button" class="text-muted-foreground md:hidden" data-sidebar-close aria-label="Fechar menu">{{ icon('x', 'h-5 w-5') }}</button>
+    </div>
+    <nav class="flex-1 overflow-y-auto px-3 py-4 text-sm" aria-label="Seções do painel">
+      <a href="{{ url_for('admin.dashboard') }}" class="mb-4 flex items-center gap-3 rounded-md px-3 py-2 {{ 'bg-secondary text-primary' if ep == 'admin.dashboard' else 'text-muted-foreground hover:text-foreground' }}">
+        {{ icon('layout-dashboard', 'h-4 w-4') }} Visão geral
+      </a>
+      {% for title, items in menu %}
+      <p class="mb-1 mt-5 px-3 font-mono text-[10px] tracking-[0.2em] text-electric/70">{{ title }}</p>
+      {% for kind, id, label in items %}
+        {% set active = (kind == 'group' and ep == 'admin.group' and va.get('gid') == id)
+                     or (kind == 'list' and ep in ('admin.list_view', 'admin.item_new', 'admin.item_edit') and va.get('cid') == id)
+                     or (kind == 'inbox' and ep == 'admin.inbox' and va.get('iid') == id)
+                     or (kind == 'media' and ep == 'admin.media_page') %}
+        <a href="{{ nav_href(kind, id) }}" class="flex items-center gap-3 rounded-md px-3 py-1.5 {{ 'bg-secondary text-primary' if active else 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground' }}" {% if active %}aria-current="page"{% endif %}>
+          {{ icon(nav_icon(kind, id), 'h-4 w-4 shrink-0') }}<span class="truncate">{{ label }}</span>
+        </a>
+      {% endfor %}
+      {% endfor %}
+    </nav>
+    <div class="shrink-0 space-y-2 border-t border-border p-3">
+      <a href="{{ url_for('public.index', preview=1) }}" target="_blank" class="btn-sm w-full justify-center">{{ icon('external-link', 'h-3.5 w-3.5') }} Ver site</a>
+      <form method="post" action="{{ url_for('admin.logout') }}">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <button class="btn-sm w-full justify-center !border-border !text-muted-foreground">Sair</button>
+      </form>
+    </div>
+  </aside>
+  <div class="fixed inset-0 z-30 hidden bg-background/70 backdrop-blur-sm" data-sidebar-backdrop></div>
+
+  <div class="min-w-0 flex-1">
+    <header class="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-xl md:hidden">
+      <button type="button" class="text-primary" data-sidebar-open aria-label="Abrir menu">{{ icon('menu', 'h-6 w-6') }}</button>
+      <span class="font-display text-sm font-bold tracking-widest">PAINEL</span>
+    </header>
+    <main class="mx-auto w-full max-w-4xl px-5 py-8 md:px-10 md:py-10">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+      <div role="{{ 'alert' if cat == 'error' else 'status' }}" class="mb-6 flex items-start gap-3 rounded-lg border px-4 py-3 text-sm {{ 'border-destructive/50 bg-destructive/10 text-foreground' if cat == 'error' else 'border-electric/40 bg-electric/10 text-foreground' }}">
+        {{ icon('info' if cat == 'error' else 'circle-check', 'mt-0.5 h-4 w-4 shrink-0 ' ~ ('text-destructive' if cat == 'error' else 'text-electric')) }}
+        <p>{{ msg }}</p>
+      </div>
+      {% endfor %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% block dialogs %}{% endblock %}
+<script src="{{ url_for('static', filename='js/admin.js', v=asset_v) }}" defer></script>
+</body>
+</html>

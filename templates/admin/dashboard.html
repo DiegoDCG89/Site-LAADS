@@ -1,0 +1,73 @@
+{% extends "admin/base.html" %}
+{% from "admin/_fields.html" import page_head %}
+{% block title %}Visão geral{% endblock %}
+{% block content %}
+{{ page_head("painel.inicio()", "Visão geral", "Edite o conteúdo do site pelo menu ao lado. As alterações são gravadas na planilha do Google e aparecem no site em até 1 minuto.") }}
+
+{% if init_error %}<p role="alert" class="mt-6 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm">{{ init_error }}</p>{% endif %}
+
+<div class="mt-8 grid gap-4 sm:grid-cols-3">
+  <a href="{{ url_for('admin.list_view', cid='eventos') }}" class="glass-card p-5">
+    <p class="font-mono text-xs text-muted-foreground">eventos ativos</p>
+    <p class="mt-2 font-display text-3xl font-bold text-gradient">{{ info.counts.get('eventos', '–') }}</p>
+  </a>
+  <a href="{{ url_for('admin.inbox', iid='inscricoes') }}" class="glass-card p-5">
+    <p class="font-mono text-xs text-muted-foreground">inscrições novas</p>
+    <p class="mt-2 font-display text-3xl font-bold text-gradient">{{ info.counts.get('inscricoes_novas', '–') }}</p>
+    <p class="help mt-1">{{ info.counts.get('inscricoes', 0) }} no total</p>
+  </a>
+  <a href="{{ url_for('admin.inbox', iid='mensagens') }}" class="glass-card p-5">
+    <p class="font-mono text-xs text-muted-foreground">mensagens novas</p>
+    <p class="mt-2 font-display text-3xl font-bold text-gradient">{{ info.counts.get('mensagens_novas', '–') }}</p>
+    <p class="help mt-1">{{ info.counts.get('mensagens', 0) }} no total</p>
+  </a>
+</div>
+
+<h2 class="mt-10 font-display text-lg font-bold">Conexões</h2>
+<div class="mt-3 grid gap-4 md:grid-cols-2">
+  <div class="hud-panel p-5">
+    <p class="flex items-center gap-2 font-medium">{{ icon('database', 'h-4 w-4 text-electric') }} Banco de dados</p>
+    {% if info.sheets_error %}
+      <p class="mt-2 text-sm text-destructive">{{ info.sheets_error }}</p>
+    {% elif info.sheets %}
+      <p class="mt-2 text-sm"><span class="led mr-2 inline-block align-middle"></span>{{ info.sheets.title }}</p>
+      {% if store_kind == 'local' %}<p class="help mt-1">Modo local: os dados não vão para o Google Sheets. Configure as variáveis para publicar.</p>
+      {% elif info.sheets.url %}<a class="mt-2 inline-flex items-center gap-1 font-mono text-xs text-electric hover:text-primary" href="{{ info.sheets.url }}" target="_blank" rel="noopener noreferrer">abrir planilha {{ icon('external-link', 'h-3 w-3') }}</a>{% endif %}
+    {% endif %}
+  </div>
+  <div class="hud-panel p-5">
+    <p class="flex items-center gap-2 font-medium">{{ icon('camera', 'h-4 w-4 text-electric') }} Imagens</p>
+    {% if info.drive_error %}
+      <p class="mt-2 text-sm text-destructive">{{ info.drive_error }}</p>
+    {% elif info.drive %}
+      <p class="mt-2 text-sm"><span class="led mr-2 inline-block align-middle"></span>{{ 'Pasta do Drive: ' ~ info.drive.name if media_kind == 'drive' else 'Armazenamento local (sem Google Drive)' }}</p>
+      {% if info.drive and not info.drive.can_write %}<p class="mt-1 text-sm text-destructive">A conta não tem permissão de edição nesta pasta.</p>{% endif %}
+      {% if auth_mode == 'service_account' and media_kind == 'drive' %}<p class="help mt-1">Conta de serviço: o envio só funciona em Drives compartilhados. Prefira OAuth (veja o README).</p>{% endif %}
+    {% endif %}
+  </div>
+</div>
+
+{% if info.missing %}
+<div class="mt-6 rounded-lg border border-primary/40 bg-primary/10 p-4 text-sm">
+  <p class="font-medium">Faltam abas na planilha: {{ info.missing|join(', ') }}</p>
+  <p class="mt-1 text-muted-foreground">Até criar, o site exibe o conteúdo padrão. Inicializar cria as abas e grava esse conteúdo para você editar. Nada existente é apagado.</p>
+  <form method="post" action="{{ url_for('admin.system_init') }}" class="mt-3">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn-solid">Inicializar planilha</button>
+  </form>
+</div>
+{% endif %}
+
+<h2 class="mt-10 font-display text-lg font-bold">Manutenção</h2>
+<div class="mt-3 flex flex-wrap gap-3">
+  <form method="post" action="{{ url_for('admin.system_cache') }}">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn-sm">Limpar cache do servidor</button>
+  </form>
+  <form method="post" action="{{ url_for('admin.system_init') }}">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn-sm">Verificar e reparar abas</button>
+  </form>
+</div>
+<p class="help mt-3">Você também pode editar a planilha diretamente: linhas e valores digitados lá aparecem no site após o cache expirar.</p>
+{% endblock %}

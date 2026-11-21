@@ -1,0 +1,42 @@
+{# Equivalentes dos componentes React do projeto original (Reveal, Section, Field, FormCard). #}
+
+{% macro reveal(delay=0, cls="") -%}
+<div class="reveal {{ cls }}" data-reveal style="transition-delay: {{ delay }}ms">{{ caller() }}</div>
+{%- endmacro %}
+
+{% macro section(id, index, eyebrow, title, desc="", alt=false) -%}
+<section id="{{ id }}" class="relative scroll-mt-16 overflow-hidden py-24 {{ 'bg-card/40' if alt else '' }}">
+  <span class="section-index pointer-events-none absolute -top-4 right-4 hidden md:block" aria-hidden="true">{{ index }}</span>
+  <div class="relative mx-auto max-w-6xl px-6">
+    {% call reveal() %}
+      {% if eyebrow %}<p class="eyebrow mb-3 text-sm">{{ eyebrow }}</p>{% endif %}
+      <h2 class="font-display text-3xl font-bold tracking-tight md:text-4xl">{{ title }}</h2>
+      {% if desc %}<p class="mt-4 max-w-xl text-muted-foreground">{{ desc }}</p>{% endif %}
+    {% endcall %}
+    <div class="mt-12">{{ caller() }}</div>
+  </div>
+</section>
+{%- endmacro %}
+
+{% macro field(label, for_id="") -%}
+<label class="block space-y-2">
+  <span class="font-mono text-xs text-electric">{{ label }}</span>
+  {{ caller() }}
+</label>
+{%- endmacro %}
+
+{% macro hud_corners(which="tl tr bl br") -%}
+{% for c in which.split() %}<span class="hud-corner hud-{{ c }}"></span>{% endfor %}
+{%- endmacro %}
+
+{% macro form_card(action, eyebrow, title, button, success, sent=false) -%}
+<form method="post" action="{{ action }}" data-ajax-form data-success="{{ success }}" class="hud-panel relative space-y-4 p-8">
+  {{ hud_corners() }}
+  {% if eyebrow %}<p class="eyebrow text-xs">{{ eyebrow }}</p>{% endif %}
+  <h3 class="font-display text-xl font-bold tracking-tight">{{ title }}</h3>
+  <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+  {{ caller() }}
+  <button type="submit" class="btn-neon w-full justify-center" data-submit>{{ button }}</button>
+  <p class="font-mono text-sm text-primary" data-form-status role="status" aria-live="polite">{% if sent %}{{ "> " }}{{ success }}{% endif %}</p>
+</form>
+{%- endmacro %}

@@ -1,0 +1,15 @@
+{
+  "name": "laads-site",
+  "private": true,
+  "description": "Ferramentas de build (CSS e ícones). Não é usado em produção no Vercel.",
+  "scripts": {
+    "build:css": "tailwindcss -i assets/tailwind.css -o public/static/css/site.css --minify",
+    "watch:css": "tailwindcss -i assets/tailwind.css -o public/static/css/site.css --watch",
+    "build:icons": "node scripts/build_icons.mjs"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.0",
+    "lucide-static": "0.575.0",
+    "tailwindcss": "^4.1.0"
+  }
+}

@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+{% from "admin/_fields.html" import init_notice, page_head %}
+{% block title %}{{ col.title }}{% endblock %}
+{% block content %}
+{{ page_head("editar.lista()", col.title, col.desc) }}
+{% if needs_init %}{{ init_notice() }}{% else %}
+<div class="mt-6 flex flex-wrap items-center gap-3">
+  <a href="{{ url_for('admin.item_new', cid=col.id) }}" class="btn-solid">{{ icon('plus', 'h-4 w-4') }} Adicionar {{ col.singular }}</a>
+  {% if items|length > 1 %}<span class="help">Arraste pela alça ou use as setas para mudar a ordem.</span>{% endif %}
+</div>
+
+<ul class="mt-6 space-y-2" data-sortable data-order-url="{{ url_for('admin.api_reorder', cid=col.id) }}" data-toggle-url="{{ url_for('admin.api_toggle', cid=col.id, rid='__ID__') }}">
+  {% for it in items %}
+  <li class="glass-card !transform-none flex items-center gap-3 p-3 {{ '' if it.ativo else 'opacity-60' }}" data-id="{{ it.id }}" draggable="true">
+    <span class="cursor-grab select-none px-1 font-mono text-lg leading-none text-muted-foreground" aria-hidden="true" title="Arrastar">⠿</span>
+    <div class="flex shrink-0 flex-col">
+      <button type="button" class="px-1 text-xs leading-none text-muted-foreground hover:text-primary" data-move="up" aria-label="Subir">▲</button>
+      <button type="button" class="px-1 text-xs leading-none text-muted-foreground hover:text-primary" data-move="down" aria-label="Descer">▼</button>
+    </div>
+    {% if col.image_key %}
+    <div class="flex h-12 w-16 shrink-0 items-center justify-center overflow-hidden rounded border border-border bg-secondary/50">
+      {% if it.image %}<img src="{{ img_url(it.image) }}" alt="" class="h-full w-full object-contain" loading="lazy">{% else %}<span class="font-mono text-[9px] text-muted-foreground">sem img</span>{% endif %}
+    </div>
+    {% elif it.icon %}
+    <span class="shrink-0 text-electric">{{ icon(it.icon, 'h-5 w-5') }}</span>
+    {% endif %}
+    <a href="{{ url_for('admin.item_edit', cid=col.id, rid=it.id) }}" class="min-w-0 flex-1">
+      <p class="truncate text-sm font-medium">{{ it.label }}</p>
+      {% if it.meta %}<p class="truncate font-mono text-[11px] text-muted-foreground">{{ it.meta }}</p>{% endif %}
+    </a>
+    <label class="flex shrink-0 items-center gap-2 text-xs text-muted-foreground" title="Mostrar no site">
+      <input type="checkbox" class="switch" data-toggle {{ 'checked' if it.ativo }} aria-label="Mostrar no site">
+    </label>
+    <a href="{{ url_for('admin.item_edit', cid=col.id, rid=it.id) }}" class="btn-sm shrink-0">Editar</a>
+  </li>
+  {% else %}
+  <li class="hud-panel p-8 text-center text-sm text-muted-foreground">Nada por aqui ainda. Clique em “Adicionar {{ col.singular }}”.</li>
+  {% endfor %}
+</ul>
+<p class="help mt-4" data-sort-status role="status"></p>
+{% endif %}
+{% endblock %}

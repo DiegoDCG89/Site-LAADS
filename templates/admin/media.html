@@ -1,0 +1,27 @@
+{% extends "admin/base.html" %}
+{% from "admin/_fields.html" import page_head %}
+{% block title %}Imagens{% endblock %}
+{% block content %}
+{{ page_head("arquivos.listar()", "Biblioteca de imagens", "Todas as imagens enviadas ficam na pasta do Google Drive configurada. Para usar uma imagem, escolha-a em qualquer campo de imagem.") }}
+<div class="mt-6 flex flex-wrap items-center gap-3" data-img-field data-standalone>
+  <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden data-img-file>
+  <button type="button" class="btn-solid" data-img-upload>{{ icon('download', 'h-4 w-4 rotate-180') }} Enviar imagem</button>
+  <span class="help" data-img-status role="status">JPG, PNG, WebP ou GIF. Imagens grandes são reduzidas automaticamente.</span>
+</div>
+<ul class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4" data-media-library>
+  {% for f in files %}
+  <li class="hud-panel overflow-hidden" data-file-id="{{ f.id }}">
+    <div class="flex aspect-[4/3] items-center justify-center bg-secondary/40">
+      <img src="{{ url_for('public.media', file_id=f.id) }}" alt="{{ f.name }}" loading="lazy" class="h-full w-full object-contain">
+    </div>
+    <div class="space-y-2 p-3">
+      <p class="truncate font-mono text-[11px] text-muted-foreground" title="{{ f.name }}">{{ f.name }}</p>
+      <p class="font-mono text-[10px] text-muted-foreground">{{ (f.size / 1024)|round|int }} KB</p>
+      <button type="button" class="btn-danger w-full justify-center" data-media-delete="{{ f.id }}" data-url="{{ url_for('admin.api_media_delete', file_id=f.id) }}">Excluir</button>
+    </div>
+  </li>
+  {% else %}
+  <li class="hud-panel col-span-full p-8 text-center text-sm text-muted-foreground">Nenhuma imagem enviada ainda.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

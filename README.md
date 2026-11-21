@@ -1,532 +1,138 @@
-# 🦆 LaADS — Site Institucional
+# LaADS: site Flask + painel de controle
 
-<div align="center">
+Site da Liga Acadêmica de ADS (design do projeto original, agora em **Flask + Jinja**), com:
 
-<img src="https://img.shields.io/badge/LaADS-Liga%20Acadêmica%20de%20ADS-2563EB?style=for-the-badge" alt="LaADS">
+- **Painel em `/admin`** para editar todos os textos, listas (eventos, parceiros, benefícios…), imagens e ver inscrições/mensagens.
+- **Google Sheets como banco de dados** (uma aba por tipo de conteúdo; dá para editar direto na planilha também).
+- **Google Drive para as imagens** (ficam privadas; o site as serve por `/media/<id>` com cache de CDN).
+- Pronto para o **Vercel** (sem build de Node no deploy).
 
-<br><br>
-
-**Da teoria para a prática.**
-
-Site institucional desenvolvido para a **Liga Acadêmica de Análise e Desenvolvimento de Sistemas (LaADS)**, com foco em apresentar a organização, divulgar suas atividades e centralizar informações sobre eventos, projetos e iniciativas acadêmicas.
-
-<br>
-
-[🌐 Site](#-demonstração) •
-[📖 Sobre](#-sobre-o-projeto) •
-[✨ Funcionalidades](#-funcionalidades) •
-[🛠️ Tecnologias](#️-tecnologias) •
-[🔐 Segurança](#-segurança) •
-[🚀 Instalação](#-instalação) •
-[🗺️ Roadmap](#️-roadmap)
-
-</div>
+Sem nenhuma credencial configurada o site já funciona com o conteúdo original, e o painel roda em "modo local". Dá para testar tudo antes de mexer no Google.
 
 ---
 
-## 📌 Sobre o Projeto
-
-O **LaADS — Site Institucional** é uma aplicação web criada para fortalecer a presença digital da **Liga Acadêmica de Análise e Desenvolvimento de Sistemas**, proporcionando um espaço centralizado para divulgação da liga e de suas atividades.
-
-O projeto foi desenvolvido com uma abordagem moderna e responsiva, buscando proporcionar uma experiência simples e intuitiva para estudantes, professores, parceiros e visitantes.
-
-A aplicação é dividida em duas áreas principais:
-
-* **Área pública:** destinada à apresentação e divulgação das informações da LaADS;
-* **Painel administrativo:** destinado ao gerenciamento do conteúdo da aplicação.
-
-A proposta do projeto é aproximar a comunidade acadêmica da prática profissional, utilizando o desenvolvimento de software como ferramenta de aprendizado, colaboração e construção de projetos reais.
-
-> **Onde estudantes de ADS saem da teoria e entram em produção: projetos reais, mentoria entre pares e uma comunidade que constrói software — e carreira — junto.**
-
----
-
-## 🎯 Objetivos
-
-O desenvolvimento do site tem como objetivos:
-
-* Criar uma identidade digital para a LaADS;
-* Apresentar a missão, visão e valores da liga;
-* Divulgar eventos, palestras e workshops;
-* Apresentar projetos e iniciativas desenvolvidas;
-* Facilitar o acesso às informações da organização;
-* Fortalecer a comunicação com estudantes e comunidade acadêmica;
-* Centralizar informações institucionais em um único ambiente;
-* Disponibilizar uma área administrativa para gerenciamento do conteúdo.
-
----
-
-## ✨ Funcionalidades
-
-### 🌐 Área Pública
-
-A página institucional permite aos visitantes:
-
-* Conhecer a LaADS;
-* Conhecer a proposta e os objetivos da liga;
-* Visualizar informações institucionais;
-* Conhecer a missão, visão e valores;
-* Acompanhar eventos e atividades;
-* Conhecer projetos e iniciativas;
-* Acessar informações de contato;
-* Navegar por uma interface responsiva;
-* Acessar o conteúdo por dispositivos desktop e mobile.
-
----
-
-### 🔐 Painel Administrativo
-
-O projeto possui uma área administrativa destinada ao gerenciamento das informações apresentadas no site.
-
-O painel conta com:
-
-* Tela de autenticação;
-* Validação de credenciais;
-* Controle de acesso ao painel;
-* Gerenciamento de conteúdo;
-* Gerenciamento de informações institucionais;
-* Gerenciamento de eventos;
-* Gerenciamento de imagens;
-* Interface administrativa dedicada.
-
-A separação entre a área pública e o painel administrativo permite que o conteúdo institucional seja gerenciado de forma centralizada.
-
----
-
-### 🛡️ Recursos de Segurança
-
-O projeto utiliza recursos de segurança para proteger o acesso à área administrativa, incluindo:
-
-* Autenticação por credenciais;
-* Hash criptográfico de senha;
-* Validação de acesso;
-* Restrição de acesso ao painel administrativo;
-* Página dedicada a informações de privacidade.
-
-> **Importante:** a implementação atual utiliza SHA-256 para hashing. Para um ambiente de produção com requisitos de segurança mais elevados, recomenda-se migrar a autenticação para um backend com armazenamento seguro de senhas utilizando algoritmos específicos para password hashing, como **Argon2id** ou **bcrypt**.
-
----
-
-## 🖥️ Demonstração
-
-A aplicação é composta por uma interface institucional pública e uma área administrativa.
-
-### Página Institucional
-
-A página pública apresenta a identidade da LaADS e seus principais conteúdos institucionais.
-
-**Principais seções:**
-
-* Apresentação;
-* Sobre a liga;
-* Missão, visão e valores;
-* Projetos;
-* Eventos;
-* Informações de contato.
-
-### Painel Administrativo
-
-Área restrita responsável pelo gerenciamento do conteúdo da aplicação.
-
-> 📸 **Sugestão:** adicione aqui uma captura de tela do painel administrativo e outra da página inicial. Isso melhora significativamente a apresentação do projeto no GitHub.
-
-Exemplo:
-
-```markdown
-## 📸 Screenshots
-
-### Página Inicial
-
-![Página Inicial](./docs/screenshots/home.png)
-
-### Painel Administrativo
-
-![Painel Administrativo](./docs/screenshots/admin.png)
-```
-
----
-
-## 🏗️ Arquitetura da Aplicação
-
-A aplicação segue uma arquitetura simples baseada em tecnologias web tradicionais.
-
-```text
-┌─────────────────────────────────────┐
-│             USUÁRIO                 │
-└──────────────────┬──────────────────┘
-                   │
-                   ▼
-┌─────────────────────────────────────┐
-│          SITE INSTITUCIONAL         │
-│             index.html              │
-└──────────────────┬──────────────────┘
-                   │
-                   │ Conteúdo público
-                   │
-                   ▼
-┌─────────────────────────────────────┐
-│       PAINEL ADMINISTRATIVO         │
-│             admin.html              │
-└──────────────────┬──────────────────┘
-                   │
-                   │ Autenticação
-                   ▼
-┌─────────────────────────────────────┐
-│       VALIDAÇÃO DE CREDENCIAIS      │
-│           SHA-256 / Hash            │
-└─────────────────────────────────────┘
-```
-
-A estrutura atual prioriza simplicidade e facilidade de manutenção, sendo adequada para um projeto institucional de pequeno porte.
-
----
-
-## 🛠️ Tecnologias
-
-O projeto foi desenvolvido utilizando tecnologias web amplamente utilizadas no mercado.
-
-| Tecnologia         | Aplicação                             |
-| ------------------ | ------------------------------------- |
-| **HTML5**          | Estrutura e semântica das páginas     |
-| **CSS3**           | Estilização e personalização visual   |
-| **JavaScript**     | Lógica e interatividade               |
-| **Tailwind CSS**   | Desenvolvimento da interface visual   |
-| **Web Crypto API** | Operações criptográficas no navegador |
-| **SHA-256**        | Hash utilizado na autenticação        |
-| **Git**            | Controle de versão                    |
-| **GitHub**         | Hospedagem e versionamento do projeto |
-
----
-
-## 📂 Estrutura do Projeto
-
-A estrutura principal da aplicação está organizada da seguinte maneira:
-
-```text
-LaADS/
-│
-├── index.html
-│       └── Página institucional pública
-│
-├── admin.html
-│       └── Painel administrativo
-│
-├── privacy.html
-│       └── Política e informações de privacidade
-│
-├── diagnostic.html
-│       └── Página de diagnóstico da aplicação
-│
-├── css/
-│       └── Arquivos de estilos personalizados
-│
-├── js/
-│       └── Scripts e lógica da aplicação
-│
-├── images/
-│       └── Imagens utilizadas no projeto
-│
-├── uploads/
-│       └── Arquivos e imagens gerenciados pela aplicação
-│
-└── README.md
-        └── Documentação do projeto
-```
-
-> A estrutura acima deve ser ajustada caso os diretórios do repositório tenham nomes diferentes.
-
----
-
-## 🚀 Instalação
-
-### Pré-requisitos
-
-Para executar o projeto localmente, você precisa ter:
-
-* Git;
-* Um navegador moderno;
-* Visual Studio Code ou outro editor de código;
-* Extensão **Live Server** ou um servidor HTTP local.
-
----
-
-### 1. Clone o repositório
+## 1. Rodar localmente
 
 ```bash
-git clone https://github.com/SEU-USUARIO/SEU-REPOSITORIO.git
+python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
+pip install -r requirements-dev.txt
+cp .env.example .env        # preencha pelo menos SECRET_KEY e ADMIN_PASSWORD
+python app.py               # http://localhost:5000   |   painel: http://localhost:5000/admin
 ```
+
+Gere o `SECRET_KEY` com `python -c "import secrets;print(secrets.token_urlsafe(48))"`.
+Para guardar a senha como hash (recomendado): `python scripts/hash_password.py` e use `ADMIN_PASSWORD_HASH` no lugar de `ADMIN_PASSWORD`.
+
+Testes: `pytest` (39 testes, incluindo um Google Sheets/Drive simulado).
 
 ---
 
-### 2. Acesse o diretório
+## 2. Configurar o Google (uma vez, ~15 min)
 
+### 2.1 Planilha e pasta
+1. Crie uma **planilha** vazia no Google Sheets. Copie o ID da URL: `docs.google.com/spreadsheets/d/`**`ESTE_TRECHO`**`/edit` → `SPREADSHEET_ID`.
+2. Crie uma **pasta** no Google Drive para as imagens. Copie o final da URL: `drive.google.com/drive/folders/`**`ESTE_TRECHO`** → `DRIVE_FOLDER_ID`.
+3. Ambas devem pertencer à **mesma conta Google** que você vai autorizar no passo 2.3.
+
+### 2.2 Projeto no Google Cloud
+1. Em <https://console.cloud.google.com> crie um projeto (ex.: `laads-site`).
+2. **APIs e serviços → Biblioteca**: ative **Google Sheets API** e **Google Drive API**.
+3. **Tela de permissão OAuth** (Google Auth Platform): tipo *Externo*, preencha nome e e-mail.
+   **Importante:** depois publique o app (**"Publicar app" / status "Em produção"**). Em modo *Teste* o token expira em **7 dias** e o painel para de salvar.
+   O aviso "app não verificado" na hora de autorizar é normal: é só você usando o próprio app (Avançado → continuar).
+4. **Credenciais → Criar credenciais → ID do cliente OAuth → Tipo: App para computador.** Baixe o JSON e salve como `client_secret.json` na raiz (já está no `.gitignore`).
+
+### 2.3 Gerar o token
 ```bash
-cd SEU-REPOSITORIO
+python scripts/get_refresh_token.py --client-secret client_secret.json
 ```
+Entre com a conta dona da planilha/pasta. O script imprime `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` e `GOOGLE_REFRESH_TOKEN`. Coloque no `.env`.
 
----
-
-### 3. Execute o projeto
-
-Abra o arquivo:
-
-```text
-index.html
-```
-
-Você também pode utilizar o **Live Server** para executar a aplicação.
-
-Alternativamente, caso tenha Python instalado:
-
+### 2.4 Criar as abas
 ```bash
-python -m http.server 8000
+python scripts/setup_sheets.py
 ```
+(ou, depois, o botão **Inicializar planilha** no painel). Cria as abas e grava o conteúdo atual do site. Nunca apaga nada.
 
-Acesse:
-
-```text
-http://localhost:8000
-```
+> **Por que OAuth e não conta de serviço?** Contas de serviço não têm cota no "Meu Drive" e falham ao enviar imagens. Elas funcionam para o Sheets e, no Drive, só em *Drives compartilhados* (Workspace). Se for o seu caso, use `GOOGLE_SERVICE_ACCOUNT_JSON` e compartilhe planilha/pasta com o e-mail da conta de serviço.
 
 ---
 
-## 🔑 Acesso ao Painel Administrativo
+## 3. Publicar no Vercel
 
-O painel administrativo está disponível através do arquivo:
+1. Suba o projeto para um repositório no GitHub (o `.env` e `client_secret.json` **não** vão: estão no `.gitignore`).
+2. No Vercel: **Add New → Project →** importe o repositório. O Flask é detectado sozinho (`app.py`), sem build command.
+3. **Settings → Environment Variables**: cadastre as mesmas variáveis do `.env`
+   `SECRET_KEY`, `ADMIN_PASSWORD_HASH` (ou `ADMIN_PASSWORD`), `SPREADSHEET_ID`, `DRIVE_FOLDER_ID`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN`.
+4. **Deploy**. Acesse `https://seu-site.vercel.app/admin`.
 
-```text
-admin.html
-```
-
-O acesso é protegido por autenticação.
-
-> **Não coloque credenciais reais, senhas ou hashes sensíveis diretamente no README ou no repositório público.**
-
-Em um ambiente de produção, recomenda-se utilizar um sistema de autenticação baseado em servidor e variáveis de ambiente.
+No painel, a **Visão geral** mostra se Planilha e Drive estão conectados e explica qualquer erro.
 
 ---
 
-## 🔒 Considerações de Segurança
+## 4. Como usar o painel
 
-A aplicação atual foi desenvolvida com foco em um projeto institucional e acadêmico. Para uma utilização em produção, algumas melhorias podem ser consideradas.
+| Menu | O que edita |
+|---|---|
+| **Site** | Logo, título/descrição para o Google, imagem de compartilhamento, nomes do menu, ligar/desligar seções |
+| **Topo** | Título, textos, botões, imagem de fundo, números, painel técnico, console animado, faixa de palavras |
+| **Eventos** | Textos da seção + cards de eventos (com capa opcional) |
+| **Faça parte** | Textos, benefícios, opções de squad do formulário |
+| **Quem somos** | Texto, números (com contagem animada), Missão/Visão/Valores |
+| **Parcerias** | Chamada + logos de parceiros |
+| **Contato** | Textos e canais (e-mail, Instagram, WhatsApp…) |
+| **Recebidos** | Inscrições e mensagens do site (marcar como lido, excluir, baixar CSV) |
+| **Arquivos** | Biblioteca de imagens do Drive |
 
-### Implementações recomendadas
-
-* [ ] Migrar autenticação para um backend;
-* [ ] Utilizar HTTPS obrigatoriamente;
-* [ ] Utilizar Argon2id ou bcrypt para armazenamento de senhas;
-* [ ] Implementar sessões seguras;
-* [ ] Adicionar expiração de sessão;
-* [ ] Implementar controle de permissões;
-* [ ] Validar dados também no servidor;
-* [ ] Implementar proteção contra XSS;
-* [ ] Implementar proteção contra CSRF quando aplicável;
-* [ ] Utilizar variáveis de ambiente;
-* [ ] Implementar logs de acesso;
-* [ ] Adicionar política de backup;
-* [ ] Configurar headers de segurança HTTP.
-
-### ⚠️ Importante
-
-O uso de SHA-256 diretamente para armazenar senhas **não é recomendado para sistemas de autenticação em produção**, pois algoritmos rápidos de hash são vulneráveis a ataques de força bruta e dicionário quando utilizados sem mecanismos específicos para password hashing.
-
-Para aplicações reais, prefira:
-
-```text
-Senha do usuário
-       │
-       ▼
-Argon2id / bcrypt
-       │
-       ▼
-Hash seguro
-       │
-       ▼
-Banco de dados
-```
+- Em listas: **arraste** pela alça (ou use ▲▼) para reordenar; o interruptor oculta um item sem apagar.
+- Imagens grandes são **reduzidas no navegador** antes do envio (o Vercel limita o corpo da requisição a ~4,5 MB).
+- **Ver site** abre a página sem cache para conferir as mudanças na hora. Para o público, a CDN atualiza em até **1 minuto** (`PUBLIC_CACHE_SECONDS`).
+- Você pode **editar a planilha direto**: linhas novas digitadas lá ganham `id` automaticamente ao abrir a lista no painel. Colunas: `ordem` (número), `ativo` (`SIM`/`NÃO`).
 
 ---
 
-## 🌍 Deploy
+## 5. Estrutura do projeto
 
-O projeto pode ser publicado em diferentes ambientes, dependendo da arquitetura utilizada.
+```
+app.py                  entrada (o Vercel detecta a variável `app`)
+laads/
+  schema.py             TUDO que é editável: campos, listas, menu do painel  <- comece por aqui
+  defaults.py           conteúdo original (fallback e dados iniciais)
+  store.py              Google Sheets (REST) + armazenamento local p/ dev
+  media.py              Google Drive + proxy /media/<id>
+  content.py            monta o site a partir da planilha (cache + fallback)
+  public.py / admin.py  rotas do site e do painel
+  security.py           login, CSRF, limite de requisições
+templates/              index.html (site) e admin/*
+public/static/          css (compilado), js, imagens (o Vercel serve `public/` pela CDN)
+assets/tailwind.css     fonte do CSS (tokens do design original)
+scripts/                hash de senha, token OAuth, inicialização da planilha
+tests/                  pytest
+```
 
-Para a parte estática da aplicação, algumas alternativas incluem:
-
-* GitHub Pages;
-* Netlify;
-* Vercel;
-* Apache;
-* Nginx;
-* Serviços tradicionais de hospedagem web.
-
-Caso o painel administrativo dependa de funcionalidades que exigem processamento no servidor, será necessário utilizar uma infraestrutura compatível com o backend responsável pela autenticação e gerenciamento dos dados.
+**Adicionar um campo editável:** crie um `F(...)` em `laads/schema.py`, use `{{ site.cfg.minha_chave }}` no template. O painel e a planilha passam a tê-lo automaticamente.
+**Mudar o visual:** edite `templates/` e `assets/tailwind.css`, rode `npm install && npm run build:css` e faça commit do `public/static/css/site.css` (o Vercel não compila CSS).
+**Novo ícone no seletor:** inclua o nome em `scripts/build_icons.mjs` e rode `npm run build:icons`.
 
 ---
 
-## 🗺️ Roadmap
+## 6. Segurança e limites (bom saber)
 
-Possíveis evoluções futuras do projeto:
+- Senha do painel por variável de ambiente (ou hash), cookie de sessão `HttpOnly` + `Secure` + `SameSite`, **CSRF** em todas as ações, bloqueio após 8 tentativas de login/15 min.
+- Tudo que visitantes enviam é gravado como **texto puro** no Sheets (nunca vira fórmula) e o CSV exportado neutraliza `=`, `+`, `-`, `@`.
+- Links editáveis só aceitam `http(s)`, `mailto`, `tel`, `#âncora` e `/caminho` (bloqueia `javascript:`). Uploads são validados pelo conteúdo real (JPG/PNG/WebP/GIF; **SVG é recusado** de propósito).
+- A rota `/media/<id>` só entrega arquivos que estão **dentro da pasta configurada**.
+- CSP restritiva e cabeçalhos de segurança em todas as páginas.
+- Limite anti-spam dos formulários (campo isca + 6 envios/10 min por IP) funciona em memória por instância: é "melhor esforço" no serverless. Para proteção forte, ative o Vercel Firewall/Bot Protection.
+- Cota do Sheets: 60 leituras/min por usuário. O cache de 30 s no servidor + 60 s na CDN mantém o uso muito abaixo disso. Se o Google falhar, o site continua no ar com a última versão lida (ou o conteúdo padrão).
 
-### Conteúdo
+## 7. Problemas comuns
 
-* [ ] Sistema completo de gerenciamento de eventos;
-* [ ] Cadastro e edição de projetos;
-* [ ] Gerenciamento de membros;
-* [ ] Galeria de imagens;
-* [ ] Sistema de notícias;
-* [ ] Agenda de eventos.
-
-### Administração
-
-* [ ] Dashboard com métricas;
-* [ ] Diferentes níveis de acesso;
-* [ ] Gerenciamento de usuários administradores;
-* [ ] Histórico de alterações;
-* [ ] Sistema de logs.
-
-### Segurança
-
-* [ ] Backend para autenticação;
-* [ ] Hashing com Argon2id ou bcrypt;
-* [ ] Sessões seguras;
-* [ ] HTTPS;
-* [ ] Proteção contra ataques comuns;
-* [ ] Variáveis de ambiente.
-
-### Experiência
-
-* [ ] Melhorias contínuas de acessibilidade;
-* [ ] Otimização de performance;
-* [ ] SEO;
-* [ ] PWA;
-* [ ] Melhorias na experiência mobile.
-
----
-
-## 🤝 Contribuição
-
-Contribuições são bem-vindas!
-
-Para contribuir com o projeto:
-
-### 1. Faça um Fork
-
-Crie uma cópia do projeto para sua conta do GitHub.
-
-### 2. Clone o repositório
-
-```bash
-git clone https://github.com/SEU-USUARIO/SEU-REPOSITORIO.git
-```
-
-### 3. Crie uma branch
-
-```bash
-git checkout -b feature/minha-feature
-```
-
-### 4. Faça suas alterações
-
-Implemente sua melhoria ou correção.
-
-### 5. Faça o commit
-
-```bash
-git add .
-git commit -m "feat: adiciona nova funcionalidade"
-```
-
-### 6. Envie para o GitHub
-
-```bash
-git push origin feature/minha-feature
-```
-
-### 7. Abra um Pull Request
-
-Descreva as alterações realizadas e aguarde a revisão.
-
----
-
-## 📋 Convenção de Commits
-
-Recomenda-se utilizar mensagens de commit padronizadas:
-
-```text
-feat: nova funcionalidade
-fix: correção de bug
-docs: atualização da documentação
-style: alterações de estilo
-refactor: refatoração de código
-perf: melhoria de performance
-security: correção relacionada à segurança
-```
-
-Exemplos:
-
-```bash
-git commit -m "feat: adiciona gerenciamento de eventos"
-```
-
-```bash
-git commit -m "fix: corrige autenticação do painel"
-```
-
-```bash
-git commit -m "docs: atualiza README"
-```
-
----
-
-## 📄 Licença
-
-Este projeto pertence à **Liga Acadêmica de Análise e Desenvolvimento de Sistemas (LaADS)**.
-
-A definição da licença de uso, modificação e distribuição deve ser especificada no arquivo:
-
-```text
-LICENSE
-```
-
-Caso o projeto seja disponibilizado publicamente como código aberto, recomenda-se escolher uma licença compatível com os objetivos da LaADS.
-
----
-
-## 🦆 Sobre a LaADS
-
-A **Liga Acadêmica de Análise e Desenvolvimento de Sistemas (LaADS)** é uma iniciativa voltada ao desenvolvimento técnico e profissional de estudantes, buscando aproximar a formação acadêmica da realidade do mercado de tecnologia.
-
-Por meio de projetos, eventos, palestras, workshops e atividades colaborativas, a liga busca criar um ambiente onde estudantes possam desenvolver suas habilidades e transformar conhecimento em prática.
-
-### Nossa missão
-
-> Aproximar teoria e prática, formando desenvolvedores prontos para o mercado desde o início da graduação.
-
-### Nossa visão
-
-> Ser referência entre ligas acadêmicas de tecnologia da região, promovendo inovação, colaboração e desenvolvimento profissional.
-
----
-
-## 🚀 Da teoria para a prática
-
-O site institucional da LaADS representa mais do que uma aplicação web.
-
-Ele é parte de uma iniciativa construída por estudantes que buscam aprender, experimentar tecnologias, resolver problemas reais e desenvolver soluções que possam gerar impacto dentro e fora da universidade.
-
-**Aprender. Construir. Compartilhar. Evoluir.**
-
-### 🦆 LaADS
-
-**Vamos construir o futuro juntos.**
-
----
-
-<div align="center">
-
-Desenvolvido com 💙 pela comunidade **LaADS**
-
-**Liga Acadêmica de Análise e Desenvolvimento de Sistemas**
-
-</div>
+| Sintoma | Causa provável |
+|---|---|
+| Painel diz "refresh token expirado / invalid_grant" | App OAuth ainda em modo *Teste*: publique e gere novo token (passo 2.2.3) |
+| "Planilha ou pasta não encontrada" | `SPREADSHEET_ID`/`DRIVE_FOLDER_ID` errados, ou a conta autorizada não é dona/editora |
+| "Sem permissão (403)" | Sheets API/Drive API não ativadas no projeto do Google Cloud |
+| Site mostra o conteúdo antigo | Cache de até 1 min na CDN; use **Ver site** no painel ou "Limpar cache" |
+| Envio de imagem falha com conta de serviço | Contas de serviço não enviam para "Meu Drive": use OAuth (passo 2.3) |
+| `/admin` diz para definir variável | Falta `SECRET_KEY` e/ou `ADMIN_PASSWORD` no Vercel (redeploy após cadastrar) |

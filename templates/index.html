@@ -1,0 +1,385 @@
+{% from "_macros.html" import reveal, section, field, hud_corners, form_card %}
+{% set cfg = site.cfg %}
+{% set brand = (cfg.brand_prefix ~ cfg.brand_suffix)|lower %}
+{% set hero_src = img_url(cfg.hero_image) or url_for('static', filename='img/hero-futuristic.jpg') %}
+{% set order = site.nav | map(attribute=0) | list %}
+{% set og_src = img_url(cfg.og_image) or hero_src %}
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ cfg.site_title }}</title>
+  <meta name="description" content="{{ cfg.site_description }}">
+  <link rel="canonical" href="{{ request.url_root }}">
+  <meta property="og:title" content="{{ cfg.site_title }}">
+  <meta property="og:description" content="{{ cfg.site_description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ request.url_root }}">
+  <meta property="og:image" content="{{ request.url_root.rstrip('/') ~ og_src if og_src.startswith('/') else og_src }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#0e1330">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;700;900&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css', v=asset_v) }}">
+  <noscript><style>.reveal{opacity:1;transform:none;filter:none}</style></noscript>
+</head>
+<body class="min-h-screen bg-background text-foreground" data-boot="{{ '1' if site.flags.fx_boot else '0' }}">
+
+  {# ---------- Tela de abertura (boot) ---------- #}
+  {% if site.flags.fx_boot %}
+  <div id="boot" hidden class="pointer-events-none fixed inset-0 z-[90] flex items-center justify-center bg-background" aria-hidden="true"
+       data-lines='{{ [brand ~ ".core :: init", "carregando modulos ............ ok", "sincronizando eventos ......... ok", "conectando membros ............ ok", "sistema pronto"] | tojson }}'>
+    <div class="w-[min(30rem,80vw)] font-mono text-xs">
+      <p class="mb-4 flex items-center justify-between text-muted-foreground">
+        <span>{{ brand }}.boot</span><span class="text-primary" data-boot-pct>0%</span>
+      </p>
+      <div class="hud-line mb-4 h-px w-full overflow-hidden bg-border">
+        <div data-boot-bar class="h-full bg-primary transition-all duration-200" style="width:0%"></div>
+      </div>
+      <div data-boot-lines></div>
+    </div>
+  </div>
+  {% endif %}
+
+  {# ---------- HUD fixo (scanlines, cantos, réguas laterais) ---------- #}
+  <div class="pointer-events-none fixed inset-x-0 top-0 z-[80] h-px bg-border/60" aria-hidden="true">
+    <div class="h-full bg-gradient-to-r from-electric via-primary to-accent" data-progress-line style="width:0%"></div>
+  </div>
+  <div class="scanlines pointer-events-none fixed inset-0 z-[70]" aria-hidden="true"></div>
+  <div class="pointer-events-none fixed inset-3 z-[71] hidden md:block" aria-hidden="true">{{ hud_corners() }}</div>
+  <div class="pointer-events-none fixed left-5 top-1/2 z-[72] hidden -translate-y-1/2 lg:block" aria-hidden="true">
+    <div class="flex flex-col items-center gap-6">
+      <span class="h-10 w-px bg-gradient-to-b from-transparent to-electric/60"></span>
+      <span class="vertical-text font-mono text-[10px] tracking-[0.4em] text-muted-foreground">{{ cfg.rail_left }}</span>
+      <div class="relative h-40 w-px overflow-hidden bg-border">
+        <div class="absolute inset-x-0 top-0 bg-primary" data-progress-rail style="height:0%"></div>
+      </div>
+      <span class="font-mono text-[10px] text-primary" data-progress-pct>000%</span>
+      <span class="h-10 w-px bg-gradient-to-t from-transparent to-primary/60"></span>
+    </div>
+  </div>
+  <div class="pointer-events-none fixed right-5 top-1/2 z-[72] hidden -translate-y-1/2 lg:block" aria-hidden="true">
+    <div class="flex flex-col items-center gap-3 font-mono text-[10px] text-muted-foreground">
+      <span class="led"></span>
+      <span class="vertical-text tracking-[0.35em]">{{ cfg.rail_status }}</span>
+      <span class="vertical-text tabular-nums text-primary" data-clock>--:--:--</span>
+      <span class="vertical-text tracking-[0.35em]">{{ cfg.rail_version }}</span>
+    </div>
+  </div>
+
+  {# ---------- Cabeçalho ---------- #}
+  <header class="fixed inset-x-0 top-0 z-[75] border-b border-border/70 bg-background/70 backdrop-blur-xl">
+    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+      <a href="#topo" class="flex items-center gap-2 font-display text-base font-bold tracking-widest">
+        {{ icon('terminal', 'h-5 w-5 text-primary') }}
+        {{ cfg.brand_prefix }}<span class="text-gradient">{{ cfg.brand_suffix }}</span>
+      </a>
+      <nav class="hidden items-center gap-7 text-sm md:flex" aria-label="Principal">
+        {% for sid, label in site.nav %}
+        <a href="#{{ sid }}" data-nav-link="{{ sid }}" class="nav-link group flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em]">
+          <span class="text-[10px] text-electric/60">0{{ loop.index }}</span>{{ label }}<span class="nav-line"></span>
+        </a>
+        {% endfor %}
+      </nav>
+      <div class="hidden items-center gap-3 md:flex">
+        <span class="led"></span>
+        <span class="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{{ cfg.nav_status }}</span>
+      </div>
+      <button class="text-primary md:hidden" type="button" data-menu-toggle aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu">
+        <span data-menu-open>{{ icon('menu', 'h-6 w-6') }}</span>
+        <span data-menu-close hidden>{{ icon('x', 'h-6 w-6') }}</span>
+      </button>
+    </div>
+    <div id="mobile-menu" hidden class="border-t border-border px-6 py-4 md:hidden">
+      {% for sid, label in site.nav %}
+      <a href="#{{ sid }}" data-menu-link class="block py-2 font-mono text-sm hover:text-primary">0{{ loop.index }} · {{ label }}</a>
+      {% endfor %}
+    </div>
+  </header>
+
+  <main>
+  {# ---------- HERO ---------- #}
+  <section id="topo" class="relative flex min-h-screen items-center overflow-hidden">
+    <img src="{{ hero_src }}" alt="" width="1920" height="1088" fetchpriority="high" class="absolute inset-0 h-full w-full object-cover opacity-70">
+    <div class="absolute inset-0 bg-gradient-to-b from-background/80 via-background/78 to-background"></div>
+    <div class="absolute inset-0"><canvas data-neural aria-hidden="true" class="h-full w-full"></canvas></div>
+    <div class="circuit-grid absolute inset-0"></div>
+    <div class="grid-floor absolute inset-x-[-20%] bottom-0 h-64 opacity-45"></div>
+
+    <div class="relative mx-auto grid w-full max-w-6xl gap-14 px-6 pt-28 pb-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+      <div>
+        <div class="mb-7 flex flex-wrap items-center gap-3">
+          {% if cfg.hero_chip %}
+          <span class="chip">{{ icon('radio', 'h-3 w-3') }} {{ cfg.hero_chip }}</span>
+          {% endif %}
+          {% if cfg.hero_typing %}
+          <span class="font-mono text-xs text-muted-foreground"><span data-typewriter="{{ cfg.hero_typing }}">{{ cfg.hero_typing }}</span><span class="caret">_</span></span>
+          {% endif %}
+        </div>
+
+        <h1 class="font-display text-4xl leading-[1.05] font-bold tracking-tight md:text-6xl xl:text-7xl">
+          {% if cfg.hero_line1 %}<span data-text="{{ cfg.hero_line1 }}" class="glitch text-gradient text-glow">{{ cfg.hero_line1 }}</span>{% endif %}
+          {% if cfg.hero_line2 %}<br><span class="text-foreground">{{ cfg.hero_line2 }}</span>{% endif %}
+          {% if cfg.hero_line3 %}<br><span class="text-gradient">{{ cfg.hero_line3 }}</span>{% endif %}
+        </h1>
+
+        {% if cfg.hero_text %}<p class="mt-7 max-w-xl text-lg text-muted-foreground">{{ cfg.hero_text }}</p>{% endif %}
+
+        <div class="mt-10 flex flex-wrap gap-4">
+          {% if cfg.hero_cta1_label %}
+          <a href="{{ safe_url(cfg.hero_cta1_link, '#faca-parte') }}" class="btn-neon">{{ cfg.hero_cta1_label }} {{ icon('arrow-right', 'h-4 w-4') }}</a>
+          {% endif %}
+          {% if cfg.hero_cta2_label %}
+          <a href="{{ safe_url(cfg.hero_cta2_link, '#eventos') }}" class="btn-ghost-neon">{{ cfg.hero_cta2_label }}</a>
+          {% endif %}
+        </div>
+
+        {% if site.stats_hero %}
+        <div class="mt-14 grid max-w-lg grid-cols-3 gap-4 border-t border-border pt-6">
+          {% for s in site.stats_hero %}
+          <div>
+            <p class="font-display text-2xl font-bold text-gradient">{{ s.valor }}</p>
+            <p class="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">{{ s.rotulo }}</p>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      {% if site.console or site.hud_metrics %}
+      {% call reveal(200, "hidden lg:block") %}
+      <div class="hud-panel relative p-5">
+        {{ hud_corners() }}
+        <div class="mb-4 flex items-center justify-between border-b border-border pb-3">
+          <span class="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+            {{ icon('cpu', 'h-3.5 w-3.5 text-electric') }} {{ cfg.hud_title }}
+          </span>
+          <span class="flex gap-1.5">
+            <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
+            <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+            <span class="h-1.5 w-1.5 rounded-full bg-electric"></span>
+          </span>
+        </div>
+        <div class="min-h-[9.5rem] font-mono text-[11px] leading-relaxed" data-console>
+          {% for line in site.console %}
+          <p class="{{ 'text-primary' if line.texto.startswith('$') else 'text-muted-foreground' }}" data-console-line>{{ line.texto }}</p>
+          {% endfor %}
+        </div>
+        {% if site.hud_metrics %}
+        <div class="mt-5 grid grid-cols-2 gap-3 font-mono text-[11px]">
+          {% for m in site.hud_metrics %}
+          <div class="rounded-md border border-border/80 bg-background/50 px-3 py-2">
+            <p class="text-muted-foreground">{{ m.rotulo }}</p>
+            <p class="text-primary">{{ m.valor }}</p>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endcall %}
+      {% endif %}
+    </div>
+
+    {% if site.ticker %}
+    <div class="absolute inset-x-0 bottom-0 z-10 border-y border-border/60 bg-background/50 py-2 backdrop-blur-sm">
+      <div class="marquee-mask relative w-full overflow-hidden" aria-hidden="true">
+        <div class="marquee-track" style="animation-duration: 34s">
+          {% for _ in range(2) %}{% for t in site.ticker %}
+          <span class="flex shrink-0 items-center gap-6 px-6">
+            <span class="font-mono text-sm tracking-[0.2em] uppercase">{{ t.texto }}</span>
+            <span class="h-1 w-1 rotate-45 bg-primary"></span>
+          </span>
+          {% endfor %}{% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </section>
+
+  {# ---------- EVENTOS ---------- #}
+  {% if site.flags.sec_eventos %}
+  {% call section("eventos", "%02d"|format(order.index('eventos') + 1), cfg.ev_eyebrow, cfg.ev_title, cfg.ev_desc, alt=(order.index('eventos') % 2 == 1)) %}
+    {% if site.eventos %}
+    <div class="grid gap-6 md:grid-cols-3">
+      {% for e in site.eventos %}
+      {% call reveal(loop.index0 * 120) %}
+      <article class="glass-card group relative h-full overflow-hidden p-6">
+        <span class="hud-corner hud-tl opacity-0 transition-opacity group-hover:opacity-100"></span>
+        <span class="hud-corner hud-br opacity-0 transition-opacity group-hover:opacity-100"></span>
+        {% if e.imagem %}
+        <img src="{{ img_url(e.imagem) }}" alt="" loading="lazy" class="-mx-6 -mt-6 mb-6 aspect-[16/9] w-[calc(100%+3rem)] max-w-none object-cover">
+        {% else %}
+        <div class="absolute -right-6 -top-8 font-display text-7xl font-bold text-electric/5 transition-colors group-hover:text-electric/10" aria-hidden="true">0{{ loop.index }}</div>
+        {% endif %}
+        <div class="flex items-center justify-between font-mono text-xs">
+          {% if e.tipo %}<span class="rounded bg-primary/15 px-2 py-1 text-primary">{{ e.tipo }}</span>{% else %}<span></span>{% endif %}
+          <span class="text-accent">{{ e.data }}</span>
+        </div>
+        <h3 class="mt-6 text-xl font-semibold">{{ e.titulo }}</h3>
+        {% if e.local %}<p class="mt-3 flex items-center gap-2 text-sm text-muted-foreground">{{ icon('calendar', 'h-4 w-4') }}{{ e.local }}</p>{% endif %}
+        <div class="mt-6 flex items-center justify-between border-t border-border pt-4 font-mono text-[11px] uppercase tracking-widest">
+          <span class="flex items-center gap-2 text-muted-foreground">{% if e.vagas %}<span class="led"></span>{{ e.vagas }}{% endif %}</span>
+          {% set href = safe_url(e.link, '#faca-parte') %}
+          <a href="{{ href }}" {% if href.startswith('http') %}target="_blank" rel="noopener noreferrer"{% endif %} class="text-electric transition-colors hover:text-primary">{{ cfg.ev_cta }}</a>
+        </div>
+      </article>
+      {% endcall %}
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="hud-panel p-8 font-mono text-sm text-muted-foreground">{{ cfg.ev_empty }}</p>
+    {% endif %}
+  {% endcall %}
+  {% endif %}
+
+  {# ---------- FAÇA PARTE ---------- #}
+  {% if site.flags.sec_facaparte %}
+  {% call section("faca-parte", "%02d"|format(order.index('faca-parte') + 1), cfg.fp_eyebrow, cfg.fp_title, cfg.fp_desc, alt=(order.index('faca-parte') % 2 == 1)) %}
+    <div class="grid gap-10 lg:grid-cols-2">
+      <div class="space-y-4">
+        {% for b in site.beneficios %}
+        {% call reveal(loop.index0 * 120) %}
+        <div class="glass-card flex items-start gap-4 p-5">
+          <span class="font-display text-2xl font-bold text-gradient">0{{ loop.index }}</span>
+          {{ icon(b.icone, 'mt-1 h-5 w-5 shrink-0 text-electric') }}
+          <p class="text-muted-foreground">{{ b.texto }}</p>
+        </div>
+        {% endcall %}
+        {% endfor %}
+        {% if cfg.fp_notice %}
+        {% call reveal(380) %}
+        <div class="hud-panel flex items-center gap-4 p-5 font-mono text-xs text-muted-foreground">
+          {{ icon('zap', 'h-4 w-4 shrink-0 text-primary') }}
+          <p>{{ cfg.fp_notice }}</p>
+        </div>
+        {% endcall %}
+        {% endif %}
+      </div>
+
+      {% call form_card(url_for('public.inscricao'), cfg.fp_form_eyebrow, cfg.fp_form_title, cfg.fp_form_button, cfg.fp_success, sent == 'inscricao') %}
+        <div class="grid gap-4 sm:grid-cols-2">
+          {% call field("nome") %}<input required name="nome" class="field" placeholder="Seu nome completo" maxlength="100" autocomplete="name">{% endcall %}
+          {% call field("período") %}<input required name="periodo" class="field" placeholder="Ex: 3" maxlength="20" inputmode="numeric">{% endcall %}
+          {% call field("telefone") %}<input required name="telefone" type="tel" class="field" placeholder="(00) 0 0000-0000" maxlength="30" autocomplete="tel">{% endcall %}
+          {% call field("email") %}<input required name="email" type="email" class="field" placeholder="voce@exemplo.com" maxlength="120" autocomplete="email">{% endcall %}
+        </div>
+        {% call field("squad") %}
+          <select required name="squad" class="field">
+            <option value="" disabled selected>Selecione</option>
+            {% for s in site.squads %}<option>{{ s.nome }}</option>{% endfor %}
+          </select>
+        {% endcall %}
+        {% call field("mensagem (opcional)") %}<textarea name="mensagem" rows="3" maxlength="1000" class="field resize-none" placeholder="Conte um pouco sobre você..."></textarea>{% endcall %}
+      {% endcall %}
+    </div>
+  {% endcall %}
+  {% endif %}
+
+  {# ---------- QUEM SOMOS ---------- #}
+  {% if site.flags.sec_quemsomos %}
+  {% call section("quem-somos", "%02d"|format(order.index('quem-somos') + 1), cfg.qs_eyebrow, cfg.qs_title, cfg.qs_desc, alt=(order.index('quem-somos') % 2 == 1)) %}
+    <div class="grid gap-10 lg:grid-cols-2">
+      <div class="space-y-4 text-muted-foreground">
+        {% for p in site.about_paragraphs %}<p>{{ p }}</p>{% endfor %}
+      </div>
+      {% if site.stats_sobre %}
+      <div class="grid grid-cols-3 gap-4">
+        {% for s in site.stats_sobre %}
+        <div class="glass-card p-5 text-center">
+          {% if s.animar and s.valor.isdigit() %}
+          <span class="font-display text-2xl font-bold text-gradient" data-countup="{{ s.valor }}" data-suffix="{{ s.sufixo }}">{{ s.valor }}{{ s.sufixo }}</span>
+          {% else %}
+          <p class="font-display text-2xl font-bold text-gradient">{{ s.valor }}{{ s.sufixo }}</p>
+          {% endif %}
+          <p class="mt-1 text-xs uppercase tracking-wide text-muted-foreground">{{ s.rotulo }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% if site.pilares %}
+    <div class="mt-10 grid gap-6 md:grid-cols-3">
+      {% for p in site.pilares %}
+      {% call reveal(loop.index0 * 120) %}
+      <div class="glass-card h-full p-6">
+        {{ icon(p.icone, 'h-6 w-6 text-electric') }}
+        <h3 class="mt-4 font-semibold">{{ p.titulo }}</h3>
+        <p class="mt-2 text-sm text-muted-foreground">{{ p.texto }}</p>
+      </div>
+      {% endcall %}
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endcall %}
+  {% endif %}
+
+  {# ---------- PARCERIAS ---------- #}
+  {% if site.flags.sec_parcerias %}
+  {% call section("parcerias", "%02d"|format(order.index('parcerias') + 1), cfg.pc_eyebrow, cfg.pc_title, cfg.pc_desc, alt=(order.index('parcerias') % 2 == 1)) %}
+    {% if site.parceiros %}
+    <ul class="mb-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      {% for p in site.parceiros %}
+      <li class="glass-card flex h-28 items-center justify-center p-5">
+        {% set href = safe_url(p.link) %}
+        {% if href %}<a href="{{ href }}" target="_blank" rel="noopener noreferrer" class="flex h-full w-full items-center justify-center" aria-label="{{ p.nome }}">{% endif %}
+          <img src="{{ img_url(p.logo) }}" alt="{{ p.nome }}" loading="lazy" class="max-h-16 w-auto max-w-full object-contain">
+        {% if href %}</a>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="hud-panel relative overflow-hidden p-8">
+      {{ hud_corners("tl br") }}
+      <div class="absolute inset-y-0 right-0 w-1/3 opacity-30"><canvas data-neural aria-hidden="true" class="h-full w-full"></canvas></div>
+      <div class="relative flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+        <div>
+          <h3 class="font-display text-2xl font-bold">{{ cfg.pc_cta_title }}</h3>
+          <p class="mt-2 text-muted-foreground">{{ cfg.pc_cta_text }}</p>
+        </div>
+        {% if cfg.pc_cta_label %}
+        <a href="{{ safe_url(cfg.pc_cta_link, '#contato') }}" class="btn-neon shrink-0">{{ cfg.pc_cta_label }} {{ icon('arrow-right', 'h-4 w-4') }}</a>
+        {% endif %}
+      </div>
+    </div>
+  {% endcall %}
+  {% endif %}
+
+  {# ---------- CONTATO ---------- #}
+  {% if site.flags.sec_contato %}
+  {% call section("contato", "%02d"|format(order.index('contato') + 1), cfg.ct_eyebrow, cfg.ct_title, cfg.ct_desc, alt=(order.index('contato') % 2 == 1)) %}
+    <div class="grid gap-10 lg:grid-cols-2">
+      <div class="space-y-4">
+        {% for c in site.contatos %}
+        {% call reveal(loop.index0 * 110) %}
+        {% set href = safe_url(c.link) %}
+        {% if href %}<a href="{{ href }}" {% if href.startswith('http') %}target="_blank" rel="noopener noreferrer"{% endif %} class="glass-card flex items-center gap-4 p-5">{% else %}<div class="glass-card flex items-center gap-4 p-5">{% endif %}
+          {{ icon(c.icone, 'h-5 w-5 shrink-0 text-electric') }}
+          <div class="min-w-0"><p class="font-mono text-xs text-muted-foreground">{{ c.rotulo }}</p><p class="break-words">{{ c.valor }}</p></div>
+        {% if href %}</a>{% else %}</div>{% endif %}
+        {% endcall %}
+        {% endfor %}
+      </div>
+      {% call form_card(url_for('public.contato'), cfg.ct_form_eyebrow, cfg.ct_form_title, cfg.ct_form_button, cfg.ct_success, sent == 'contato') %}
+        {% call field("nome") %}<input required name="nome" class="field" placeholder="Seu nome completo" maxlength="100" autocomplete="name">{% endcall %}
+        {% call field("email") %}<input required name="email" type="email" class="field" placeholder="voce@exemplo.com" maxlength="120" autocomplete="email">{% endcall %}
+        {% call field("mensagem") %}<textarea required name="mensagem" rows="4" maxlength="2000" class="field resize-none" placeholder="Como podemos ajudar?"></textarea>{% endcall %}
+      {% endcall %}
+    </div>
+  {% endcall %}
+  {% endif %}
+  </main>
+
+  <footer class="border-t border-border py-10">
+    <div class="mx-auto flex max-w-6xl flex-col justify-between gap-4 px-6 font-mono text-xs text-muted-foreground md:flex-row md:items-center">
+      <span>{{ cfg.footer_left }}</span>
+      <span class="flex items-center gap-2">{{ icon('radar', 'h-3.5 w-3.5 text-electric') }} {{ cfg.footer_mid }}</span>
+      <a href="#topo" class="flex items-center gap-2 text-electric transition-colors hover:text-primary">{{ icon('chevron-up', 'h-3.5 w-3.5') }} {{ cfg.footer_top }}</a>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/site.js', v=asset_v) }}" defer></script>
+</body>
+</html>
