@@ -11,7 +11,7 @@
   {% else %}
   <label for="{{ id }}" class="block text-sm font-medium">{{ f.label }}{% if f.required %} <span class="text-accent" title="obrigatório">*</span>{% endif %}</label>
   {% if f.type == 'textarea' %}
-    <textarea id="{{ id }}" name="{{ f.key }}" rows="{{ 7 if f.maxlength > 500 else 3 }}" maxlength="{{ f.maxlength + 50 }}" class="field resize-y" placeholder="{{ f.placeholder }}" data-counter="{{ f.maxlength }}" {{ 'required' if f.required }}>{{ value }}</textarea>
+    <textarea id="{{ id }}" name="{{ f.key }}" rows="{{ 20 if f.maxlength > 5000 else (7 if f.maxlength > 500 else 3) }}" maxlength="{{ f.maxlength + 50 }}" class="field resize-y" placeholder="{{ f.placeholder }}" data-counter="{{ f.maxlength }}" {{ 'required' if f.required }}>{{ value }}</textarea>
   {% elif f.type == 'icon' %}
     <div data-icon-field>
       <input type="hidden" name="{{ f.key }}" value="{{ value }}" id="{{ id }}">
