@@ -33,7 +33,7 @@ from .schema import CONFIG_HEADERS, CONFIG_TAB
 log = logging.getLogger(__name__)
 
 SHEETS_API = "https://sheets.googleapis.com/v4/spreadsheets"
-CELL_LIMIT = 4000  # a API aceita 50.000, mas textos longos aqui indicam abuso
+CELL_LIMIT = 45000  # o Sheets aceita 50.000 por célula (os formulários públicos já limitam o tamanho)
 
 
 class StoreError(Exception):

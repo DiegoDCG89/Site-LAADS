@@ -1,6 +1,7 @@
 """Funções auxiliares usadas nos templates e nas rotas."""
 from __future__ import annotations
 
+import html as _html
 import json
 import os
 import re
@@ -62,3 +63,48 @@ def media_ref(value: str | None) -> str:
 
 def split_paragraphs(text: str) -> list[str]:
     return [p.strip() for p in re.split(r"\n\s*\n", text or "") if p.strip()]
+
+
+# --------------------------------------------------------------------------- #
+# Texto formatado simples (páginas legais). Tudo é escapado ANTES de aplicar a formatação.
+# --------------------------------------------------------------------------- #
+
+_BOLD = re.compile(r"\*\*(.+?)\*\*")
+_LINK = re.compile(r"\[([^\]]+)\]\(([^)\s]+)\)")
+
+
+def _inline(raw: str) -> str:
+    out = str(escape(raw))
+
+    def link(m: re.Match) -> str:
+        url = safe_url(_html.unescape(m.group(2)))
+        if not url:
+            return m.group(1)
+        ext = ' target="_blank" rel="noopener noreferrer"' if url.startswith("http") else ""
+        return (f'<a href="{escape(url)}"{ext} class="text-electric underline-offset-4 hover:underline">'
+                f"{m.group(1)}</a>")
+
+    out = _LINK.sub(link, out)
+    return _BOLD.sub(r'<strong class="font-semibold text-foreground">\1</strong>', out)
+
+
+def render_rich(text: str, tokens: dict[str, str] | None = None) -> Markup:
+    """`## Título`, `- lista`, **negrito**, [link](url), parágrafos por linha em branco."""
+    text = (text or "").replace("\r\n", "\n")
+    for key, val in (tokens or {}).items():
+        text = text.replace("{" + key + "}", val)
+    html_out: list[str] = []
+    for block in re.split(r"\n\s*\n", text.strip()):
+        lines = [ln.rstrip() for ln in block.split("\n") if ln.strip()]
+        if lines and lines[0].startswith("## "):
+            html_out.append(f'<h2 class="mt-12 font-display text-xl font-bold tracking-tight text-foreground">'
+                            f"{_inline(lines[0][3:])}</h2>")
+            lines = lines[1:]
+        if not lines:
+            continue
+        if all(ln.startswith("- ") for ln in lines):
+            items = "".join(f'<li class="pl-1">{_inline(ln[2:])}</li>' for ln in lines)
+            html_out.append(f'<ul class="mt-4 list-disc space-y-2 pl-6 marker:text-primary">{items}</ul>')
+        else:
+            html_out.append(f'<p class="mt-4">{"<br>".join(_inline(ln) for ln in lines)}</p>')
+    return Markup("\n".join(html_out))

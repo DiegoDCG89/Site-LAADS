@@ -12,6 +12,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .legal_defaults import PRIVACY_DEFAULT, TERMS_DEFAULT
+
 CONFIG_TAB = "config"
 CONFIG_HEADERS = ["chave", "valor", "descricao"]
 
@@ -201,6 +203,22 @@ GROUPS: tuple[Group, ...] = (
         ),
     ),
     Group(
+        "legal", "Privacidade e Termos", "shield-check",
+        "Textos das páginas /privacidade e /termos (LGPD). Os marcadores {entidade} e {email} são trocados pelos "
+        "dados abaixo. Formatação: ## Título, listas com - item, **negrito**, [texto](link). "
+        "Modelo genérico: peça revisão jurídica da sua instituição.",
+        (
+            F("legal_entity", "Nome da entidade responsável", d="LaADS — Liga Acadêmica de Análise e Desenvolvimento de Sistemas",
+              maxlength=140, required=True, help="Vira o {entidade} nos textos."),
+            F("legal_email", "E-mail para assuntos de privacidade", d="contato@laads.edu.br", maxlength=120,
+              required=True, help="Vira o {email} nos textos. É o canal para o titular exercer seus direitos."),
+            F("legal_updated", "Data da última atualização", d="21 de novembro de 2026", maxlength=40,
+              help="Atualize sempre que alterar os textos."),
+            F("privacy_text", "Política de Privacidade", "textarea", d=PRIVACY_DEFAULT, maxlength=20000),
+            F("terms_text", "Termos de Uso", "textarea", d=TERMS_DEFAULT, maxlength=20000),
+        ),
+    ),
+    Group(
         "rodape", "Rodapé", "layout-dashboard",
         "Os três textos da base do site.",
         (
@@ -354,7 +372,7 @@ ADMIN_MENU: tuple[tuple[str, tuple[tuple[str, str, str], ...]], ...] = (
     )),
     ("Parcerias", (("group", "parcerias", "Textos e chamada"), ("list", "parceiros", "Parceiros"))),
     ("Contato", (("group", "contato", "Textos e formulário"), ("list", "contatos", "Canais"))),
-    ("Rodapé", (("group", "rodape", "Textos do rodapé"),)),
+    ("Rodapé e páginas legais", (("group", "rodape", "Textos do rodapé"), ("group", "legal", "Privacidade e Termos"))),
     ("Recebidos", (("inbox", "inscricoes", "Inscrições"), ("inbox", "mensagens", "Mensagens"))),
     ("Arquivos", (("media", "midia", "Biblioteca de imagens"),)),
 )

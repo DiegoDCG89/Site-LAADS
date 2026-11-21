@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 from flask import (Blueprint, Response, abort, current_app, jsonify, make_response, redirect,
                    render_template, request, url_for)
 
+from .utils import render_rich
 from .security import client_ip, is_admin, rate_limited
 
 log = logging.getLogger(__name__)
@@ -46,6 +47,25 @@ def index():
     return resp
 
 
+def _legal(key: str, title: str, slug: str):
+    site = svc().content.get(fresh=bool(request.args.get("preview")) and is_admin())
+    cfg = site["cfg"]
+    body = render_rich(cfg.get(key, ""), {"entidade": cfg.get("legal_entity", ""), "email": cfg.get("legal_email", "")})
+    resp = make_response(render_template("legal.html", site=site, title=title, body=body, slug=slug))
+    resp.headers["Cache-Control"] = f"public, max-age=0, s-maxage={svc().settings.public_cache}, stale-while-revalidate=300"
+    return resp
+
+
+@bp.get("/privacidade")
+def privacy():
+    return _legal("privacy_text", "Política de Privacidade", "privacidade")
+
+
+@bp.get("/termos")
+def terms():
+    return _legal("terms_text", "Termos de Uso", "termos")
+
+
 @bp.get("/robots.txt")
 def robots():
     body = ("User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\n"
@@ -56,7 +76,8 @@ def robots():
 @bp.get("/sitemap.xml")
 def sitemap():
     xml = ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-           f"<url><loc>{request.url_root}</loc></url></urlset>")
+           f"<url><loc>{request.url_root}</loc></url>"
+           f"<url><loc>{request.url_root}privacidade</loc></url><url><loc>{request.url_root}termos</loc></url></urlset>")
     return Response(xml, mimetype="application/xml")
 
 
