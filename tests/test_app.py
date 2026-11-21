@@ -351,3 +351,41 @@ def test_new_column_is_added_when_missing():
     store.append("squads", {"nome": "Mobile", "ordem": "9", "ativo": "SIM"}, ["id", "ordem", "ativo", "nome"])
     assert app.fake.sheets["squads"]["grid"][0][-1] == "nome"
     assert store.fetch(["squads"])["squads"][-1]["nome"] == "Mobile"
+
+
+# --------------------------------------------------------------------------- páginas legais
+
+def test_legal_pages_render_with_tokens(app):
+    c = app.test_client()
+    priv = c.get("/privacidade").get_data(as_text=True)
+    terms = c.get("/termos").get_data(as_text=True)
+    assert "Política de Privacidade" in priv and "LGPD" in priv and "{entidade}" not in priv and "{email}" not in priv
+    assert 'href="mailto:contato@laads.edu.br"' in priv
+    assert 'href="/privacidade"' in terms and "Termos de Uso" in terms
+    home = c.get("/").get_data(as_text=True)
+    assert 'href="/privacidade"' in home and 'href="/termos"' in home
+
+
+def test_legal_text_is_editable_and_safe(app):
+    svc = app.extensions["laads"]
+    svc.store.config_set({"privacy_text": "## Meu título\n\n- <b>item</b>\n\n[x](javascript:alert(1)) e **forte**",
+                          "legal_email": "dpo@liga.org"})
+    html = app.test_client().get("/privacidade").get_data(as_text=True)
+    assert "Meu título" in html and "<b>item</b>" not in html and "&lt;b&gt;item" in html
+    assert "javascript:" not in html and "<strong" in html
+    assert "privacidade" in app.test_client().get("/sitemap.xml").get_data(as_text=True)
+
+
+def test_long_legal_text_survives_sheets_roundtrip():
+    app = make_app("sheets")
+    initialize(app.extensions["laads"].store)
+    long_text = "## Seção\n\n" + ("Parágrafo de teste com acentuação. " * 400)  # ~14 mil caracteres
+    c = app.test_client()
+    token = login(c)
+    from laads.schema import GROUP_BY_ID
+    form = {f.key: f.d for f in GROUP_BY_ID["legal"].fields}
+    form.update({"_csrf": token, "privacy_text": long_text})
+    assert c.post("/admin/c/legal", data=form).status_code == 302
+    assert "Parágrafo de teste" in c.get("/privacidade").get_data(as_text=True)
+    stored = app.fake.sheets["config"]["grid"]
+    assert any(len(row) > 1 and len(row[1]) > 10000 for row in stored)
